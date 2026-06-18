@@ -13,6 +13,8 @@
             padding: 40px 20px;
             display: flex;
             justify-content: center;
+            /* Remove a barra de rolagem horizontal se as partículas passarem da tela */
+            overflow-x: hidden; 
         }
 
         ::selection {
@@ -30,6 +32,7 @@
             width: 100%;
             box-shadow: 0 0 20px rgba(180, 180, 180, 0.05), inset 0 0 20px rgba(180, 180, 180, 0.05);
             position: relative;
+            z-index: 10; /* Garante que o texto fique acima do rastro do mouse */
         }
 
         .runic-text {
@@ -78,7 +81,6 @@
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
         }
 
-        /* Área da Descrição Interativa */
         .spell-description {
             position: relative;
             line-height: 1.8;
@@ -115,7 +117,6 @@
             transition: opacity 0.6s ease;
         }
 
-        /* Efeito de Tradução (Classe adicionada via JS) */
         .char-wrapper.translated .rune-char {
             transform: translateY(10px);
             opacity: 0;
@@ -125,21 +126,44 @@
             opacity: 1;
         }
 
-        /* Efeito de Partículas (Bolinhas Mágicas) */
-        .particle {
+        /* --- NOVOS ESTILOS: Efeitos do Mouse --- */
+        
+        /* Rastro de luz prateada */
+        .mouse-trail {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #e0e0e0;
+            box-shadow: 0 0 10px #c0c0c0, 0 0 20px #ffffff;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            animation: fadeTrail 0.4s ease-out forwards;
+            z-index: 9999;
+        }
+        
+        /* Poeira mágica (fagulhas) */
+        .mouse-dust {
             position: absolute;
             width: 3px;
             height: 3px;
-            background-color: #fff;
+            background: #ffffff;
+            box-shadow: 0 0 6px #ffffff;
             border-radius: 50%;
-            box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.8);
             pointer-events: none;
-            animation: floatUp 1.5s ease-out forwards;
+            transform: translate(-50%, -50%);
+            animation: floatDust 0.8s ease-out forwards;
+            z-index: 9998;
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-40px) scale(0); opacity: 0; }
+        @keyframes fadeTrail {
+            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.1); }
+        }
+
+        @keyframes floatDust {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); }
         }
     </style>
 </head>
@@ -161,7 +185,7 @@
     </div>
 
     <script>
-        // Lógica do Menu (Nav)
+        // --- CÓDIGO DO MENU (NAV) ---
         const runesSet = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛟᛞ';
         const menuLinks = document.querySelectorAll('nav a');
 
@@ -197,7 +221,7 @@
             });
         });
 
-        // Lógica da Descrição Principal (Tradução em Massa + Partículas + Reversão)
+        // --- CÓDIGO DA DESCRIÇÃO (TRADUÇÃO E REVERSÃO) ---
         const descBox = document.getElementById('main-desc');
         const paragraphs = [
             "Você foi infectado pelo Feitiço do Pesadelo.",
@@ -231,67 +255,61 @@
         const wrappers = document.querySelectorAll('.char-wrapper');
         let isHovered = false;
 
-        // Função para criar as bolinhas mágicas
-        function spawnParticles(x, y, amount) {
-            for (let i = 0; i < amount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                // Posição aleatória ao redor do cursor
-                const offsetX = (Math.random() * 60) - 30;
-                const offsetY = (Math.random() * 40) - 20;
-                
-                particle.style.left = (x + offsetX) + 'px';
-                particle.style.top = (y + offsetY) + 'px';
-                
-                descBox.appendChild(particle);
-                
-                // Remove a partícula após a animação
-                setTimeout(() => {
-                    if(particle.parentNode) particle.parentNode.removeChild(particle);
-                }, 1500);
-            }
-        }
-
-        // Evento de "Tradução" e partículas (Mouse passa por cima)
-        descBox.addEventListener('mouseenter', (e) => {
+        descBox.addEventListener('mouseenter', () => {
             isHovered = true;
-            
-            // Pega a posição inicial do mouse para as primeiras partículas
-            const rect = descBox.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            spawnParticles(x, y, 15); // Dispara várias partículas de uma vez
-
             wrappers.forEach((wrapper, index) => {
                 setTimeout(() => {
                     if(isHovered) {
                         wrapper.classList.add('translated');
                     }
-                }, index * 10); // Velocidade da onda de tradução
+                }, index * 10);
             });
         });
 
-        // Evento contínuo de partículas enquanto move o mouse traduzindo
-        descBox.addEventListener('mousemove', (e) => {
-            if(Math.random() > 0.8) { // Gera partículas aleatoriamente ao mover
-                const rect = descBox.getBoundingClientRect();
-                spawnParticles(e.clientX - rect.left, e.clientY - rect.top, 1);
-            }
-        });
-
-        // Evento de "Reversão" (Mouse sai da área)
         descBox.addEventListener('mouseleave', () => {
             isHovered = false;
-            // A reversão acontece de trás para frente, lentamente
             const total = wrappers.length;
             wrappers.forEach((wrapper, index) => {
                 setTimeout(() => {
                     if(!isHovered) {
                         wrapper.classList.remove('translated');
                     }
-                }, (total - index) * 15); // O tempo invertido cria a reversão rúnica
+                }, (total - index) * 15);
             });
+        });
+
+        // --- NOVO CÓDIGO: RASTRO MÁGICO DO MOUSE ---
+        window.addEventListener('mousemove', (e) => {
+            // 1. Rastro Prateado Principal
+            const trail = document.createElement('div');
+            trail.className = 'mouse-trail';
+            trail.style.left = e.pageX + 'px';
+            trail.style.top = e.pageY + 'px';
+            document.body.appendChild(trail);
+            
+            setTimeout(() => {
+                trail.remove();
+            }, 400); // Tempo de vida do rastro
+
+            // 2. Poeira Mágica (gerada aleatoriamente enquanto move)
+            if (Math.random() > 0.4) { // 60% de chance de gerar poeira a cada movimento
+                const dust = document.createElement('div');
+                dust.className = 'mouse-dust';
+                dust.style.left = e.pageX + 'px';
+                dust.style.top = e.pageY + 'px';
+                
+                // Direção aleatória para a poeira flutuar
+                const tx = (Math.random() - 0.5) * 80; // espalha no eixo X
+                const ty = (Math.random() - 0.5) * 80; // espalha no eixo Y
+                dust.style.setProperty('--tx', `${tx}px`);
+                dust.style.setProperty('--ty', `${ty}px`);
+                
+                document.body.appendChild(dust);
+                
+                setTimeout(() => {
+                    dust.remove();
+                }, 800); // Tempo de vida da poeira
+            }
         });
     </script>
 
