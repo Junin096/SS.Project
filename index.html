@@ -3,132 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste de Runas - Efeito de Queda</title>
+    <title>Feitiço do Pesadelo - Shadow Slave</title>
     <style>
         body {
             background-color: #050505;
             color: #d4d4d4;
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 50px;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
         }
 
-        /* O estilo de seleção nativo modificado para Branco Puro */
         ::selection {
             background-color: #ffffff;
             color: #000000;
             text-shadow: none;
         }
 
-        .description-box {
+        .spell-frame {
             background-color: #0a0a0a;
             border: 1px solid #3a3a3a;
-            padding: 30px;
-            max-width: 600px;
-            border-radius: 5px;
-            cursor: pointer; /* Indica que é interagível */
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 0 20px rgba(180, 180, 180, 0.05), inset 0 0 20px rgba(180, 180, 180, 0.05);
+            position: relative;
+        }
+
+        .runic-text {
+            color: #f0f0f0;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+            text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .runes-decor {
+            text-align: center;
+            font-size: 24px;
+            color: #555;
+            margin-bottom: 10px;
+            letter-spacing: 10px;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(200, 200, 200, 0.3), rgba(0, 0, 0, 0));
+            margin: 30px 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        nav a {
+            color: #888;
+            text-decoration: none;
+            font-weight: bold;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            min-width: 150px; 
+            text-align: center;
+            display: inline-block;
+        }
+
+        nav a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Área da Descrição Interativa */
+        .spell-description {
+            position: relative;
             line-height: 1.8;
-            font-size: 18px;
-            /* Um leve brilho para indicar que pode ser clicado */
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
-            transition: box-shadow 0.3s ease;
+            font-size: 16px;
+            text-align: justify;
+            padding: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.4s ease;
         }
 
-        .description-box:hover {
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+        .spell-description:hover {
+            background-color: rgba(255, 255, 255, 0.02);
         }
 
-        /* O contêiner de cada letra para o efeito funcionar */
         .char-wrapper {
             display: inline-block;
             position: relative;
         }
 
-        /* Estado Rúnico */
         .rune-char {
             display: inline-block;
-            color: #888;
+            color: #555;
             transition: transform 0.6s ease, opacity 0.4s ease;
         }
 
-        /* Estado Real (Traduzido) - Brilho Branco Puro */
         .real-char {
             position: absolute;
             left: 0;
             top: 0;
             opacity: 0;
             color: #ffffff;
-            text-shadow: 0 0 5px #ffffff, 0 0 15px #ffffff;
+            text-shadow: 0 0 5px #ffffff, 0 0 12px rgba(255, 255, 255, 0.8);
             transition: opacity 0.6s ease;
         }
 
-        /* --- CLASSES DE ANIMAÇÃO APLICADAS VIA JAVASCRIPT --- */
-        
-        /* A runa cai e desaparece */
+        /* Efeito de Tradução (Classe adicionada via JS) */
         .char-wrapper.translated .rune-char {
-            transform: translateY(15px);
+            transform: translateY(10px);
             opacity: 0;
         }
 
-        /* O texto real aparece brilhando */
         .char-wrapper.translated .real-char {
             opacity: 1;
+        }
+
+        /* Efeito de Partículas (Bolinhas Mágicas) */
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            animation: floatUp 1.5s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-40px) scale(0); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="description-box" id="spell-text" title="Clique para focar e traduzir as runas">
-        </div>
+    <div class="spell-frame">
+        <div class="runes-decor">ᛋᚼᚨᛏᛟᚹ ᛋᛚᚨᚡᛖ</div>
+        <h1 class="runic-text">[O Feitiço do Pesadelo]</h1>
+        
+        <nav>
+            <a href="#" data-value="[ Atributos ]">[ Atributos ]</a>
+            <a href="#" data-value="[ Memórias ]">[ Memórias ]</a>
+            <a href="#" data-value="[ Ecos ]">[ Ecos ]</a>
+        </nav>
+
+        <hr>
+
+        <div class="spell-description" id="main-desc"></div>
+    </div>
 
     <script>
-        // O texto real que queremos esconder inicialmente
-        const secretText = "Atributo Inato: Criança das Sombras. As sombras o reconhecem como um dos seus. Você recebe afinidade com as sombras e resistência a ataques baseados em trevas.";
-        const runes = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛟᛞ';
-        const textBox = document.getElementById('spell-text');
+        // Lógica do Menu (Nav)
+        const runesSet = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛟᛞ';
+        const menuLinks = document.querySelectorAll('nav a');
 
-        // Função para construir o HTML letra por letra
-        function buildRunicText(text) {
+        function getRandomRunes(text) {
+            return text.split('').map(char => {
+                if (char === '[' || char === ']' || char === ' ') return char;
+                return runesSet[Math.floor(Math.random() * runesSet.length)];
+            }).join('');
+        }
+
+        menuLinks.forEach(link => {
+            const originalText = link.dataset.value;
+            link.innerText = getRandomRunes(originalText);
+            let interval = null;
+
+            link.addEventListener('mouseenter', () => {
+                let iteration = 0;
+                clearInterval(interval);
+                interval = setInterval(() => {
+                    link.innerText = originalText.split('').map((letter, index) => {
+                        if(index < iteration) return originalText[index];
+                        if (letter === '[' || letter === ']' || letter === ' ') return letter;
+                        return runesSet[Math.floor(Math.random() * runesSet.length)];
+                    }).join('');
+                    if(iteration >= originalText.length) clearInterval(interval);
+                    iteration += 0.5; 
+                }, 30);
+            });
+
+            link.addEventListener('mouseleave', () => {
+                clearInterval(interval);
+                link.innerText = getRandomRunes(originalText);
+            });
+        });
+
+        // Lógica da Descrição Principal (Tradução em Massa + Partículas + Reversão)
+        const descBox = document.getElementById('main-desc');
+        const paragraphs = [
+            "Você foi infectado pelo Feitiço do Pesadelo.",
+            "As runas se contorcem na escuridão antes de se traduzirem em uma linguagem que sua mente consegue compreender. Este é um registro daqueles que trilham o caminho da Ascensão em um mundo em ruínas.",
+            "Concentre-se nestes escritos para visualizar os registros das almas atreladas ao destino."
+        ];
+
+        function buildRunicParagraphs(textArray) {
             let htmlContent = '';
-            
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                
-                // Se for espaço, mantemos o espaço normal para não quebrar o layout
-                if (char === ' ') {
-                    htmlContent += ' ';
-                    continue;
+            textArray.forEach(text => {
+                htmlContent += '<p>';
+                for (let i = 0; i < text.length; i++) {
+                    const char = text[i];
+                    if (char === ' ') {
+                        htmlContent += ' ';
+                        continue;
+                    }
+                    const randomRune = runesSet[Math.floor(Math.random() * runesSet.length)];
+                    htmlContent += `
+                        <span class="char-wrapper">
+                            <span class="rune-char">${randomRune}</span>
+                            <span class="real-char">${char}</span>
+                        </span>`;
                 }
-
-                // Gera uma runa aleatória
-                const randomRune = runes[Math.floor(Math.random() * runes.length)];
-                
-                // Cria a estrutura: um wrapper contendo a runa e a letra real escondida
-                htmlContent += `
-                    <span class="char-wrapper">
-                        <span class="rune-char">${randomRune}</span>
-                        <span class="real-char">${char}</span>
-                    </span>
-                `;
-            }
+                htmlContent += '</p>';
+            });
             return htmlContent;
         }
 
-        // Injeta o texto processado na tela
-        textBox.innerHTML = buildRunicText(secretText);
+        descBox.innerHTML = buildRunicParagraphs(paragraphs);
+        const wrappers = document.querySelectorAll('.char-wrapper');
+        let isHovered = false;
 
-        // A mágica acontece aqui: O Evento de Clique
-        textBox.addEventListener('click', () => {
-            const wrappers = document.querySelectorAll('.char-wrapper');
-            
-            wrappers.forEach((wrapper, index) => {
-                // Adicionamos um pequeno atraso matemático (index * 20) 
-                // para criar o efeito "em cascata" ou "onda" da tradução
+        // Função para criar as bolinhas mágicas
+        function spawnParticles(x, y, amount) {
+            for (let i = 0; i < amount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Posição aleatória ao redor do cursor
+                const offsetX = (Math.random() * 60) - 30;
+                const offsetY = (Math.random() * 40) - 20;
+                
+                particle.style.left = (x + offsetX) + 'px';
+                particle.style.top = (y + offsetY) + 'px';
+                
+                descBox.appendChild(particle);
+                
+                // Remove a partícula após a animação
                 setTimeout(() => {
-                    wrapper.classList.add('translated');
-                }, index * 20); // Altere esse "20" para deixar a cascata mais rápida ou mais devagar
+                    if(particle.parentNode) particle.parentNode.removeChild(particle);
+                }, 1500);
+            }
+        }
+
+        // Evento de "Tradução" e partículas (Mouse passa por cima)
+        descBox.addEventListener('mouseenter', (e) => {
+            isHovered = true;
+            
+            // Pega a posição inicial do mouse para as primeiras partículas
+            const rect = descBox.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            spawnParticles(x, y, 15); // Dispara várias partículas de uma vez
+
+            wrappers.forEach((wrapper, index) => {
+                setTimeout(() => {
+                    if(isHovered) {
+                        wrapper.classList.add('translated');
+                    }
+                }, index * 10); // Velocidade da onda de tradução
+            });
+        });
+
+        // Evento contínuo de partículas enquanto move o mouse traduzindo
+        descBox.addEventListener('mousemove', (e) => {
+            if(Math.random() > 0.8) { // Gera partículas aleatoriamente ao mover
+                const rect = descBox.getBoundingClientRect();
+                spawnParticles(e.clientX - rect.left, e.clientY - rect.top, 1);
+            }
+        });
+
+        // Evento de "Reversão" (Mouse sai da área)
+        descBox.addEventListener('mouseleave', () => {
+            isHovered = false;
+            // A reversão acontece de trás para frente, lentamente
+            const total = wrappers.length;
+            wrappers.forEach((wrapper, index) => {
+                setTimeout(() => {
+                    if(!isHovered) {
+                        wrapper.classList.remove('translated');
+                    }
+                }, (total - index) * 15); // O tempo invertido cria a reversão rúnica
             });
         });
     </script>
