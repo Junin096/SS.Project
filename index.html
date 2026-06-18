@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feitiço do Pesadelo - Shadow Slave</title>
     <style>
-        /* Fundo escuro absoluto, como o Vazio */
         body {
             background-color: #050505;
             color: #d4d4d4;
-            font-family: 'Courier New', Courier, monospace; /* Fonte monoespaçada dá um ar de "sistema" antigo */
+            font-family: 'Courier New', Courier, monospace;
             margin: 0;
             padding: 40px 20px;
             display: flex;
             justify-content: center;
         }
 
-        /* A Moldura do Feitiço */
         .spell-frame {
             background-color: #0a0a0a;
             border: 1px solid #3a3a3a;
@@ -24,11 +22,9 @@
             padding: 40px;
             max-width: 800px;
             width: 100%;
-            /* Brilho mágico ao redor da moldura */
             box-shadow: 0 0 20px rgba(180, 180, 180, 0.05), inset 0 0 20px rgba(180, 180, 180, 0.05);
         }
 
-        /* Textos com brilho de runas */
         .runic-text {
             color: #f0f0f0;
             text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
@@ -65,6 +61,10 @@
             font-weight: bold;
             letter-spacing: 2px;
             transition: all 0.3s ease;
+            /* Garante que o tamanho não pule durante a animação */
+            min-width: 150px; 
+            text-align: center;
+            display: inline-block;
         }
 
         nav a:hover {
@@ -93,9 +93,9 @@
         <h1 class="runic-text">[O Feitiço do Pesadelo]</h1>
         
         <nav>
-            <a href="#">[ Atributos ]</a>
-            <a href="#">[ Memórias ]</a>
-            <a href="#">[ Ecos ]</a>
+            <a href="#" data-value="[ Atributos ]">[ Atributos ]</a>
+            <a href="#" data-value="[ Memórias ]">[ Memórias ]</a>
+            <a href="#" data-value="[ Ecos ]">[ Ecos ]</a>
         </nav>
 
         <hr>
@@ -106,6 +106,56 @@
             <p>Selecione uma das opções acima para visualizar os registros das almas atreladas ao destino.</p>
         </div>
     </div>
+
+    <script>
+        const runes = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛟᛞ';
+        const menuLinks = document.querySelectorAll('nav a');
+
+        // Função para gerar caracteres rúnicos
+        function getRandomRunes(text) {
+            return text.split('').map(char => {
+                if (char === '[' || char === ']' || char === ' ') return char;
+                return runes[Math.floor(Math.random() * runes.length)];
+            }).join('');
+        }
+
+        menuLinks.forEach(link => {
+            const originalText = link.dataset.value;
+            
+            // Estado inicial: Runas
+            link.innerText = getRandomRunes(originalText);
+
+            let interval = null;
+
+            // Quando passa o mouse: O Feitiço traduz
+            link.addEventListener('mouseenter', () => {
+                let iteration = 0;
+                clearInterval(interval);
+
+                interval = setInterval(() => {
+                    link.innerText = originalText.split('').map((letter, index) => {
+                        if(index < iteration) {
+                            return originalText[index];
+                        }
+                        if (letter === '[' || letter === ']' || letter === ' ') return letter;
+                        return runes[Math.floor(Math.random() * runes.length)];
+                    }).join('');
+
+                    if(iteration >= originalText.length){
+                        clearInterval(interval);
+                    }
+                    // Velocidade da decodificação
+                    iteration += 1 / 2; 
+                }, 30);
+            });
+
+            // Quando tira o mouse: Volta para as runas
+            link.addEventListener('mouseleave', () => {
+                clearInterval(interval);
+                link.innerText = getRandomRunes(originalText);
+            });
+        });
+    </script>
 
 </body>
 </html>
