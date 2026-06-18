@@ -2,36 +2,42 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Feitiço do Pesadelo - Ajustes</title>
+    <title>Feitiço do Pesadelo - Interface Final</title>
     <style>
-        /* Estilos base mantidos para a estética */
-        body { background-color: #050505; color: #d4d4d4; font-family: 'Courier New', monospace; padding: 50px; }
+        body { background-color: #050505; color: #d4d4d4; font-family: 'Courier New', monospace; padding: 50px; display: flex; justify-content: center; overflow-x: hidden; }
         
         .spell-description {
-            line-height: 2.2; /* Espaçamento melhorado */
-            font-size: 18px;
+            line-height: 2.5;
+            font-size: 19px;
             cursor: pointer;
-            padding: 40px;
+            padding: 50px;
             border: 1px solid #222;
             max-width: 700px;
+            background: rgba(10, 10, 10, 0.8);
+            border-radius: 8px;
         }
 
         .char-wrapper { position: relative; display: inline-block; margin: 0 1px; }
 
-        .rune-char { color: #666; transition: all 0.5s ease; }
+        .rune-char { color: #555; transition: all 0.8s ease; }
+        
+        /* Efeito de Fumaça/Chama na Revelação */
         .real-char { 
             position: absolute; left: 0; top: 0; opacity: 0; 
-            color: #fff; text-shadow: 0 0 8px #fff; 
-            transition: all 0.5s ease;
+            color: #fff; text-shadow: 0 0 10px #fff; 
+            transition: all 1.2s ease;
+            filter: blur(5px); /* Efeito de fumaça inicial */
+            transform: translateY(-5px);
         }
 
-        .translated .rune-char { transform: translateY(10px); opacity: 0; }
-        .translated .real-char { opacity: 1; }
+        .translated .rune-char { transform: translateY(10px); opacity: 0; filter: blur(5px); }
+        .translated .real-char { opacity: 1; filter: blur(0px); transform: translateY(0); }
 
-        /* Partícula de letra */
+        /* Partícula de poeira */
         .char-dust {
-            position: absolute; width: 2px; height: 2px; background: #fff;
-            border-radius: 50%; pointer-events: none;
+            position: absolute; width: 3px; height: 3px; background: #fff;
+            border-radius: 50%; pointer-events: none; box-shadow: 0 0 5px #fff;
+            z-index: 100;
         }
     </style>
 </head>
@@ -39,17 +45,15 @@
 
     <div class="spell-description" id="desc-box">
         <p>Você foi infectado pelo Feitiço do Pesadelo.</p>
-        <p>As runas se contorcem na escuridão antes de se traduzirem em uma linguagem que sua mente consegue compreender. Este é um registro daqueles que trilham o caminho da Ascensão.</p>
+        <p>As runas se contorcem na escuridão, dissipando-se como poeira ao vento, revelando a linguagem proibida. Este é um registro daqueles que trilham o caminho da Ascensão.</p>
     </div>
 
     <script>
         const runesSet = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛟᛞ';
         const box = document.getElementById('desc-box');
 
-        // Inicializa o texto
         function initText() {
-            const paragraphs = box.querySelectorAll('p');
-            paragraphs.forEach(p => {
+            box.querySelectorAll('p').forEach(p => {
                 const text = p.innerText;
                 p.innerHTML = '';
                 text.split('').forEach(char => {
@@ -63,35 +67,31 @@
 
         initText();
 
-        // Lógica de Tradução
         box.addEventListener('click', () => {
             const allChars = box.querySelectorAll('.char-wrapper');
             allChars.forEach((el, index) => {
                 setTimeout(() => {
                     el.classList.add('translated');
-                    spawnDust(el, true); // true = escala maior (clique)
-                }, index * 10);
+                    spawnDust(el);
+                }, index * 20); // Efeito de onda suave
             });
         });
 
-        // Efeito de poeira (menor nas letras, maior no clique)
-        function spawnDust(el, big) {
+        function spawnDust(el) {
             const dust = document.createElement('div');
             dust.className = 'char-dust';
             const rect = el.getBoundingClientRect();
-            dust.style.left = rect.left + 'px';
-            dust.style.top = rect.top + 'px';
-            dust.style.width = big ? '4px' : '2px';
-            dust.style.height = big ? '4px' : '2px';
+            dust.style.left = (rect.left + rect.width/2) + 'px';
+            dust.style.top = (rect.top + rect.height/2) + 'px';
             document.body.appendChild(dust);
             
-            // Animação simples de dissipar
+            // Animação de poeira subindo e ondulando
             dust.animate([
                 { transform: 'translateY(0) scale(1)', opacity: 1 },
-                { transform: 'translateY(-20px) scale(0)', opacity: 0 }
-            ], { duration: 800 });
+                { transform: 'translateY(-30px) scale(0)', opacity: 0 }
+            ], { duration: 1000, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
             
-            setTimeout(() => dust.remove(), 800);
+            setTimeout(() => dust.remove(), 1000);
         }
     </script>
 </body>
