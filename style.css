@@ -1,0 +1,27 @@
+body { background-color: #050505; color: #d4d4d4; font-family: 'Courier New', monospace; padding: 50px; }
+
+.spell-description {
+    line-height: 2.5; font-size: 19px; cursor: pointer;
+    padding: 50px; border: 1px solid #222;
+    max-width: 700px; background: rgba(10, 10, 10, 0.8); border-radius: 8px;
+}
+
+.char-wrapper { position: relative; display: inline-block; margin: 0 1px; }
+
+.rune-char { color: #555; transition: all 0.5s ease; }
+
+.real-char { 
+    position: absolute; left: 0; top: 0; opacity: 0; 
+    color: #fff; text-shadow: 0 0 8px #fff; 
+    transition: all 1s ease;
+    filter: blur(4px); /* Fumaça nas letras */
+    transform: translateY(-5px);
+}
+
+.translated .rune-char { transform: translateY(10px); opacity: 0; filter: blur(4px); }
+.translated .real-char { opacity: 1; filter: blur(0px); transform: translateY(0); }
+
+.char-dust {
+    position: absolute; width: 2px; height: 2px; background: #fff;
+    border-radius: 50%; pointer-events: none; z-index: 100;
+}
