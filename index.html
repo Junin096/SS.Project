@@ -3,63 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SS.Project - Fan Wiki</title>
+    <title>Feitiço do Pesadelo - Shadow Slave</title>
     <style>
+        /* Fundo escuro absoluto, como o Vazio */
         body {
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #050505;
+            color: #d4d4d4;
+            font-family: 'Courier New', Courier, monospace; /* Fonte monoespaçada dá um ar de "sistema" antigo */
             margin: 0;
-            padding: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
         }
-        header {
-            background-color: #000000;
-            padding: 20px;
+
+        /* A Moldura do Feitiço */
+        .spell-frame {
+            background-color: #0a0a0a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            /* Brilho mágico ao redor da moldura */
+            box-shadow: 0 0 20px rgba(180, 180, 180, 0.05), inset 0 0 20px rgba(180, 180, 180, 0.05);
+        }
+
+        /* Textos com brilho de runas */
+        .runic-text {
+            color: #f0f0f0;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
             text-align: center;
-            border-bottom: 2px solid #333;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
-        h1 {
-            color: #ffffff;
-            letter-spacing: 2px;
+
+        .runes-decor {
+            text-align: center;
+            font-size: 24px;
+            color: #555;
+            margin-bottom: 10px;
+            letter-spacing: 10px;
         }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(200, 200, 200, 0.3), rgba(0, 0, 0, 0));
+            margin: 30px 0;
+        }
+
         nav {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            padding: 10px;
-            background-color: #1a1a1a;
+            gap: 30px;
+            margin-bottom: 30px;
         }
+
         nav a {
-            color: #b3b3b3;
+            color: #888;
             text-decoration: none;
             font-weight: bold;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
         }
+
         nav a:hover {
-            color: #ffffff;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
         }
-        main {
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
+
+        .spell-description {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #a0a0a0;
+            text-align: justify;
+        }
+
+        .highlight {
+            color: #cccccc;
+            font-weight: bold;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Olá, Sonhador, preparesse para avaliação!</h1>
-    </header>
+    <div class="spell-frame">
+        <div class="runes-decor">ᛋᚼᚨᛏᛟᚹ ᛋᛚᚨᚡᛖ</div>
+        <h1 class="runic-text">[O Feitiço do Pesadelo]</h1>
+        
+        <nav>
+            <a href="#">[ Atributos ]</a>
+            <a href="#">[ Memórias ]</a>
+            <a href="#">[ Ecos ]</a>
+        </nav>
 
-    <nav>
-        <a href="#">Início</a>
-        <a href="#">Personagens</a>
-        <a href="#">Sobre o Mundo</a>
-    </nav>
+        <hr>
 
-    <main>
-        <h2>Bem-vindo ao Feitiço do Pesadelo, Sonhador!</h2>
-        <p>Neste site, você conhecerá os personagens mais importantes da obra Shadow Slave e descobrirá os mistérios desse mundo sombrio.</p>
-    </main>
+        <div class="spell-description">
+            <p>Você foi infectado pelo <span class="highlight">Feitiço do Pesadelo</span>.</p>
+            <p>As runas se contorcem na escuridão antes de se traduzirem em uma linguagem que sua mente consegue compreender. Este é um registro daqueles que trilham o caminho da Ascensão em um mundo em ruínas.</p>
+            <p>Selecione uma das opções acima para visualizar os registros das almas atreladas ao destino.</p>
+        </div>
+    </div>
 
 </body>
 </html>
