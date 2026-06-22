@@ -13,20 +13,34 @@ function initSpellText(boxId) {
             span.className = 'char-wrapper';
             span.innerHTML = `<span class="rune-char">${runesSet[Math.floor(Math.random()*runesSet.length)]}</span><span class="real-char">${char}</span>`;
             p.appendChild(span);
+
+            // --- NOVO: Tradução Individual por Mouse (Efeito Lanterna) ---
+            span.addEventListener('mouseenter', () => {
+                if(!span.classList.contains('translated')){
+                    span.classList.add('translated');
+                    spawnEstilhaco(span); // Estilhaça apenas esta letra
+                }
+            });
+
+            // Retorna ao Vazio (volta a ser runa) após o mouse sair
+            span.addEventListener('mouseleave', () => {
+                setTimeout(() => {
+                    span.classList.remove('translated');
+                }, 1500); // 1.5 segundos para a runa voltar
+            });
         });
     });
 
-    // Tradução em massa ao clicar
+    // Tradução em massa ao clicar (mantida como feitiço de revelação total)
     box.addEventListener('click', () => {
         const allChars = box.querySelectorAll('.char-wrapper');
         allChars.forEach((el, index) => {
             setTimeout(() => {
-                // Só dispara se a letra ainda não tiver sido traduzida
                 if(!el.classList.contains('translated')){
                     el.classList.add('translated');
-                    spawnEstilhaco(el); // Efeito de estilhaço individual
+                    spawnEstilhaco(el);
                 }
-            }, index * 25); // Velocidade da revelação (um pouco mais lenta para ver o estilhaço)
+            }, index * 15);
         });
     });
 }
@@ -34,31 +48,27 @@ function initSpellText(boxId) {
 // Cria a explosão de luz branca pura em cada letra
 function spawnEstilhaco(el) {
     const rect = el.getBoundingClientRect();
-    // Cria 5 partículas rápidas e brilhantes por letra
     for(let i = 0; i < 5; i++) { 
         const dust = document.createElement('div');
         dust.className = 'char-dust';
-        // Começa no centro da letra
         dust.style.left = (rect.left + rect.width/2) + 'px';
         dust.style.top = (rect.top + rect.height/2) + 'px';
         document.body.appendChild(dust);
         
-        // Direção aleatória da explosão
-        const tx = (Math.random() - 0.5) * 100; // espalha no eixo X
-        const ty = (Math.random() - 0.5) * 100; // espalha no eixo Y
+        const tx = (Math.random() - 0.5) * 100;
+        const ty = (Math.random() - 0.5) * 100;
         
         dust.animate([
             { transform: 'translate(0, 0) scale(1)', opacity: 1 },
             { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
-        ], { duration: 600, easing: 'ease-out' }); // Explosão rápida
+        ], { duration: 600, easing: 'ease-out' });
         
         setTimeout(() => dust.remove(), 600);
     }
 }
 
-// --- LÓGICA DO RASTRO MÁGICO DO MOUSE ---
+// LÓGICA DO RASTRO MÁGICO DO MOUSE
 window.addEventListener('mousemove', (e) => {
-    // 1. Rastro Prateado Principal
     const trail = document.createElement('div');
     trail.className = 'mouse-trail';
     trail.style.left = e.pageX + 'px';
@@ -66,15 +76,14 @@ window.addEventListener('mousemove', (e) => {
     document.body.appendChild(trail);
     setTimeout(() => trail.remove(), 400);
 
-    // 2. Poeira Mágica (fagulhas)
-    if (Math.random() > 0.5) { // 50% de chance de gerar poeira a cada movimento
+    if (Math.random() > 0.5) {
         const dust = document.createElement('div');
         dust.className = 'mouse-dust';
         dust.style.left = e.pageX + 'px';
         dust.style.top = e.pageY + 'px';
         
-        const tx = (Math.random() - 0.5) * 60; // espalha no eixo X
-        const ty = (Math.random() - 0.5) * 60; // espalha no eixo Y
+        const tx = (Math.random() - 0.5) * 60;
+        const ty = (Math.random() - 0.5) * 60;
         dust.style.setProperty('--tx', `${tx}px`);
         dust.style.setProperty('--ty', `${ty}px`);
         
