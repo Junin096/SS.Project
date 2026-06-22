@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Feitiço do Pesadelo - Sunny</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .nav-menu { display: flex; gap: 20px; margin-bottom: 30px; justify-content: center; }
+        .nav-link { color: #888; text-decoration: none; font-size: 16px; letter-spacing: 2px; transition: all 0.3s; }
+        .nav-link:hover { color: #fff; text-shadow: 0 0 8px #fff; }
+        
+        .character-title {
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            letter-spacing: 4px;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 700px; width: 100%;">
+        <nav class="nav-menu">
+            <a href="../index.html" class="nav-link">[ Início ]</a>
+            <a href="sunny.html" class="nav-link" style="color: #fff;">[ Sunny ]</a>
+        </nav>
+
+        <h1 class="character-title">REGISTRO DE ALMA</h1>
+
+        <div class="spell-description" id="sunny-status">
+            <p>Nome Verdadeiro: Perdido nas Sombras</p>
+            <p>Nome: Sunless</p>
+            <p>Rank: Adormecido</p>
+            <p>Atributo: [Atributo Bloqueado]</p>
+        </div>
+    </div>
+
+    <script src="../js/spell.js"></script>
+    <script>
+        // Inicializa o mesmo efeito rúnico e estilhaço na ficha do Sunny!
+        initSpellText('sunny-status');
+    </script>
+</body>
+</html>
