@@ -1,83 +1,59 @@
-/* style.css */
-body { 
-    background-color: #050505; 
-    color: #d4d4d4; 
-    font-family: 'Courier New', monospace; 
-    padding: 50px; 
-    display: flex; 
-    justify-content: center; 
-    overflow-x: hidden; /* Importante para não dar barra de rolagem com as partículas do mouse */
+/* --- NOVOS ESTILOS: HUB DE PERSONAGENS --- */
+
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+    width: 100%;
 }
 
-.spell-description {
-    line-height: 2.5; 
-    font-size: 19px; 
-    cursor: pointer;
-    padding: 50px; 
+.character-card {
+    background: rgba(12, 12, 12, 0.9);
     border: 1px solid #222;
-    max-width: 700px; 
-    background: rgba(10, 10, 10, 0.8); 
     border-radius: 8px;
-    user-select: none;
-    position: relative;
-    z-index: 10;
+    padding: 20px;
+    text-align: center;
+    transition: border-color 0.4s, transform 0.4s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.char-wrapper { position: relative; display: inline-block; margin: 0 1px; }
-
-.rune-char { 
-    color: #555; 
-    transition: all 0.4s ease; /* Transição mais rápida para o efeito de quebra */
+.character-card:hover {
+    border-color: #fff;
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.05);
 }
 
-.real-char { 
-    position: absolute; left: 0; top: 0; opacity: 0; 
-    color: #fff; text-shadow: 0 0 12px #fff, 0 0 20px #fff; 
-    transition: all 0.6s ease;
-    filter: blur(2px);
-    transform: scale(1.5); /* Começa maior, como se estivesse surgindo da quebra */
+/* Espaço reservado para a futura imagem */
+.image-placeholder {
+    width: 100%;
+    height: 280px;
+    background: #0f0f0f;
+    border: 1px dashed #444;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    transition: border-color 0.3s, color 0.3s;
 }
 
-/* Efeito de Estilhaço na Revelação (Classe adicionada via JS) */
-.translated .rune-char { 
-    transform: scale(2) rotate(15deg); /* A runa "explode" para fora */
-    opacity: 0; 
-    filter: blur(5px);
+.character-card:hover .image-placeholder {
+    border-color: #666;
+    color: #888;
 }
 
-.translated .real-char { 
-    opacity: 1; 
-    filter: blur(0px); 
-    transform: scale(1); /* Volta ao tamanho normal */
-}
-
-/* Partícula de estilhaço (fagulho branco) */
-.char-dust {
-    position: absolute; width: 3px; height: 3px; background: #fff;
-    border-radius: 50%; pointer-events: none; z-index: 100;
-    box-shadow: 0 0 8px #fff, 0 0 15px #fff;
-}
-
-/* --- ESTILOS DO MOUSE --- */
-.mouse-trail {
-    position: absolute; width: 6px; height: 6px; background: #e0e0e0;
-    box-shadow: 0 0 10px #c0c0c0, 0 0 20px #ffffff;
-    border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
-    animation: fadeTrail 0.4s ease-out forwards; z-index: 9999;
-}
-
-.mouse-dust {
-    position: absolute; width: 2px; height: 2px; background: #ffffff;
-    box-shadow: 0 0 6px #ffffff; border-radius: 50%; pointer-events: none;
-    transform: translate(-50%, -50%); animation: floatDust 0.8s ease-out forwards; z-index: 9998;
-}
-
-@keyframes fadeTrail {
-    0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.1); }
-}
-
-@keyframes floatDust {
-    0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); }
+.card-name {
+    font-size: 20px;
+    color: #fff;
+    margin: 10px 0 5px 0;
+    letter-spacing: 1px;
 }

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Feitiço do Pesadelo - Personagens</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .nav-menu { display: flex; gap: 20px; margin-bottom: 30px; justify-content: center; }
+        .nav-link { color: #888; text-decoration: none; font-size: 16px; letter-spacing: 2px; transition: all 0.3s; }
+        .nav-link:hover { color: #fff; text-shadow: 0 0 8px #fff; }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 800px; width: 100%;">
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-link">[ Início ]</a>
+            <a href="personagens.html" class="nav-link" style="color: #fff;">[ Personagens ]</a>
+        </nav>
+
+        <div class="character-grid">
+            
+            <a href="personagens/sunny.html" class="character-card">
+                <div class="image-placeholder">[ Imagem Oculta ]</div>
+                <div class="card-name">Sunny</div>
+                <div class="spell-description" id="true-name-sunny" style="padding: 10px; font-size: 14px; border: none; background: none;">
+                    <p>Perdido nas Sombras</p>
+                </div>
+            </a>
+
+            <a href="#" class="character-card">
+                <div class="image-placeholder">[ Imagem Oculta ]</div>
+                <div class="card-name">Nephis</div>
+                <div class="spell-description" id="true-name-nephis" style="padding: 10px; font-size: 14px; border: none; background: none;">
+                    <p>Flor da Mudança</p>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+    <script src="js/spell.js"></script>
+    <script>
+        // Ativa o efeito de estilhaço nos Nomes Verdadeiros do catálogo!
+        initSpellText('true-name-sunny');
+        initSpellText('true-name-nephis');
+    </script>
+</body>
+</html>
