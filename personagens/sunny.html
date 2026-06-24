@@ -271,4 +271,16 @@
                     const rect = letter.getBoundingClientRect();
                     spawnBlackDust(rect.left + (rect.width/2), rect.top + (rect.height/2));
 
-                    // Fase 2: Revela
+                // Fase 2: Revela o texto final com efeito preto completo
+                    setTimeout(() => {
+                        letter.classList.remove('shattering');
+                        letter.textContent = letter.dataset.real;
+                        letter.classList.add('revealed');
+                    }, 250); // Tempo na cor cinza escuro antes de quebrar
+
+                }, index * 45); // Velocidade da cascata de revelação
+            });
+        }, 800); // Delay inicial ao carregar o registro
+    </script>
+</body>
+</html>
