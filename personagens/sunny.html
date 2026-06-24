@@ -4,105 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Alma - Lorde das Sombras</title>
-    <link rel="stylesheet" href="../css/style.css?v=8">
-    
     <style>
         body { 
-            background-color: #0d0f12 !important; /* Tons de preto visíveis e diferenciados */
+            background-color: #0d0f12 !important; 
             overflow-x: hidden;
             position: relative;
             margin: 0; padding: 0;
         }
 
-        /* --- DESIGN DO BOTÃO DE TRADUÇÃO EM MASSA --- */
-        .mass-translate-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 25px;
-        }
+        .mass-translate-container { display: flex; justify-content: center; margin-bottom: 25px; margin-top: 20px; }
         .mass-translate-btn {
-            background: #181b22;
-            border: 1px solid #2d333f;
-            padding: 10px 20px;
-            border-radius: 4px;
-            color: #8a95a5;
-            font-family: monospace;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            background: #181b22; border: 1px solid #2d333f; padding: 10px 20px; border-radius: 4px;
+            color: #8a95a5; font-family: monospace; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 30; position: relative;
         }
-        .mass-translate-btn:hover {
-            border-color: #4f5b73;
-            color: #ffffff;
-            box-shadow: 0 0 15px rgba(255,255,255,0.05);
-        }
-        .mass-translate-icon {
-            width: 18px; height: 18px;
-            object-fit: contain;
-            filter: brightness(0.8);
-        }
+        .mass-translate-btn:hover { border-color: #4f5b73; color: #ffffff; }
+        .mass-translate-icon { width: 18px; height: 18px; object-fit: contain; }
 
-        /* --- AJUSTE DE CONTRASTE DO CONTAINER --- */
-        .character-container {
-            display: flex; gap: 25px;
-            background: #13161c; /* Fundo que destaca o texto */
-            border: 1px solid #222730;
-            padding: 25px; border-radius: 4px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            align-items: center;
-            position: relative;
-        }
+        .essence-thread { position: fixed; width: 200px; height: 200px; pointer-events: none; z-index: 20; opacity: 0.5; animation: threadPulse 5s infinite ease-in-out; }
+        .thread-tl { top: 0; left: 0; border-left: 2px solid #1c2026; border-top: 2px solid #1c2026; background: radial-gradient(circle at top left, rgba(24,27,34,0.8) 0%, transparent 70%); }
+        .thread-tr { top: 0; right: 0; border-right: 2px solid #1c2026; border-top: 2px solid #1c2026; background: radial-gradient(circle at top right, rgba(24,27,34,0.8) 0%, transparent 70%); }
+        .thread-bl { bottom: 0; left: 0; border-left: 2px solid #1c2026; border-bottom: 2px solid #1c2026; background: radial-gradient(circle at bottom left, rgba(24,27,34,0.8) 0%, transparent 70%); }
+        .thread-br { bottom: 0; right: 0; border-right: 2px solid #1c2026; border-bottom: 2px solid #1c2026; background: radial-gradient(circle at bottom right, rgba(24,27,34,0.8) 0%, transparent 70%); }
+        @keyframes threadPulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.03); opacity: 0.7; } }
 
-        @media (max-width: 600px) {
-            .character-container { flex-direction: column; text-align: center; padding: 20px; }
-            .nav-menu { justify-content: center !important; }
-        }
+        .ambient-shadow { position: fixed; border-radius: 50%; background: radial-gradient(circle, rgba(10,12,16,0.9) 0%, transparent 70%); filter: blur(40px); pointer-events: none; z-index: 1; }
+        .shadow-1 { width: 600px; height: 600px; top: -10%; left: -10%; animation: shadowBowLeft 15s infinite ease-in-out; }
+        .shadow-2 { width: 500px; height: 500px; bottom: -10%; right: -10%; animation: shadowBowRight 18s infinite ease-in-out; }
+        @keyframes shadowBowLeft { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(60px, 60px) scale(1.1); } }
+        @keyframes shadowBowRight { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-50px, -40px) scale(1.1); } }
 
-        .character-img {
-            width: 180px; height: 240px; object-fit: cover;
-            border: 1px solid #2d333f; border-radius: 2px;
-            filter: grayscale(40%) brightness(75%);
-        }
-
-        /* --- COMPORTAMENTO VISÍVEL DAS LETRAS --- */
-        .sunny-rune-text p { margin: 12px 0; font-family: monospace; font-size: 16px; min-height: 20px; }
+        .content-wrapper { position: relative; z-index: 10; max-width: 750px; width: 100%; margin: 0 auto; padding: 5vh 20px 40px 20px; box-sizing: border-box; }
+        .character-container { display: flex; gap: 25px; background: #13161c; border: 1px solid #222730; padding: 25px; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); align-items: center; position: relative; }
+        @media (max-width: 600px) { .character-container { flex-direction: column; text-align: center; } }
         
-        .sunny-letter { 
-            display: inline-block; 
-            font-family: serif; 
-            color: #2d333f; /* Runas visíveis como névoa escura antes de traduzir */
-            text-shadow: 0 0 4px rgba(0,0,0,0.8);
-            transition: all 0.2s ease;
-        }
-        .sunny-letter.revealed { 
-            color: #cbd5e1 !important; /* Texto limpo e legível pós-tradução */
-            text-shadow: none !important;
-            transform: scale(1);
-        }
+        .character-img { width: 180px; height: 240px; object-fit: cover; border: 1px solid #2d333f; border-radius: 2px; filter: grayscale(30%) brightness(80%); }
 
-        /* Canvas dedicado para a Serpente de Sombra */
-        #snake-canvas {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; z-index: 15;
-        }
+        .sunny-rune-text p { margin: 12px 0; font-family: monospace; font-size: 16px; min-height: 20px; color: #8a95a5; }
+        .sunny-letter { display: inline-block; font-family: serif; color: #3a4354; text-shadow: 0 0 2px #000; transition: all 0.2s; }
+        .sunny-letter.spell-attempt { color: #111 !important; transform: scale(0.9); }
+        .sunny-letter.weaving-essence { color: #000 !important; text-shadow: 0 0 8px #000 !important; transform: scale(1.2); }
+        .sunny-letter.revealed { color: #cbd5e1 !important; text-shadow: none !important; transform: scale(1); }
+
+        .shadow-strand { position: fixed; pointer-events: none; z-index: 100; border-radius: 50%; background: #000; box-shadow: 0 0 4px #000; }
+        #snake-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; }
+        #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
+
+        .back-btn-container { display: flex; justify-content: center; margin-top: 40px; z-index: 20; position: relative; }
+        .back-btn { background: transparent; border: 1px solid #4f5b73; padding: 10px 30px; border-radius: 4px; color: #8a95a5; font-family: monospace; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
+        .back-btn:hover { background: #11141a; border-color: #cbd5e1; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
-    <div class="content-wrapper" style="max-width: 750px; margin: 0 auto; padding: 5vh 20px;">
-        <nav class="nav-menu" style="display: flex; gap: 20px; margin-bottom: 20px;">
-            <a href="../index.html" style="color: #4f5b73; text-decoration: none; font-family: monospace;">[ Início ]</a>
-            <a href="../personagens.html" style="color: #4f5b73; text-decoration: none; font-family: monospace;">[ Personagens ]</a>
-        </nav>
+    <div class="essence-thread thread-tl"></div><div class="essence-thread thread-tr"></div>
+    <div class="essence-thread thread-bl"></div><div class="essence-thread thread-br"></div>
+    <div class="ambient-shadow shadow-1"></div><div class="ambient-shadow shadow-2"></div>
+    <canvas id="ambient-canvas"></canvas>
 
+    <div class="content-wrapper">
         <div class="mass-translate-container">
             <button class="mass-translate-btn" id="mass-btn">
-                <img src="../img/nephischibi.jpg" alt="👁️" class="mass-translate-icon">
-                Tradução Cósmica em Massa
+                <img src="../imagens/translate-icon.png" alt="👁️" class="mass-translate-icon">
+                Invocar Serpente de Sombra
             </button>
         </div>
 
@@ -118,78 +82,73 @@
                 <p>Atributos: [Lorde das Sombras], [Mestre das Sombras], [Encarnação das Trevas]</p>
             </div>
         </div>
+
+        <div class="back-btn-container">
+            <a href="../index.html" class="back-btn">← Retornar à Base</a>
+        </div>
     </div>
 
     <script>
+        const canvas = document.getElementById('ambient-canvas'); const ctx = canvas.getContext('2d');
+        let particles = []; function resCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resCanvas); resCanvas();
+        class P { constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.size = Math.random()*2; this.speedY = -0.3; } update() { this.y += this.speedY; if(this.y<0) this.y=canvas.height; } draw() { ctx.fillStyle = "rgba(20,24,33,0.5)"; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); } }
+        for(let i=0;i<30;i++) particles.push(new P());
+        function anim() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(anim); } anim();
+
         const runes = ['ᚦ', 'ᚧ', 'ᚨ', 'ᛒ', 'ᛃ', 'ᛄ', 'ᛅ', 'ᛆ', 'ᛇ'];
         const container = document.getElementById('sunny-soul-core');
-        const paragraphs = container.querySelectorAll('p');
-
-        paragraphs.forEach(p => {
-            const originalText = p.textContent; p.textContent = '';
-            for (let i = 0; i < originalText.length; i++) {
-                const span = document.createElement('span'); 
-                span.classList.add('sunny-letter');
-                span.dataset.real = originalText[i];
-                span.textContent = originalText[i] === ' ' ? ' ' : runes[Math.floor(Math.random() * runes.length)];
+        container.querySelectorAll('p').forEach(p => {
+            const txt = p.textContent; p.textContent = '';
+            for (let i = 0; i < txt.length; i++) {
+                const span = document.createElement('span'); span.classList.add('sunny-letter');
+                span.dataset.real = txt[i]; span.textContent = txt[i] === ' ' ? ' ' : runes[Math.floor(Math.random() * runes.length)];
                 p.appendChild(span);
             }
         });
 
-        // --- ANIMAÇÃO CINEMATOGRÁFICA DA SERPENTE DE SOMBRA ---
-        const sCanvas = document.getElementById('snake-canvas');
-        const sCtx = sCanvas.getContext('2d');
-        
-        function resizeSnakeCanvas() {
-            sCanvas.width = sCanvas.parentElement.offsetWidth;
-            sCanvas.height = sCanvas.parentElement.offsetHeight;
+        function spawnStrands(x,y){
+            for(let i=0;i<3;i++){
+                const s = document.createElement('div'); s.classList.add('shadow-strand');
+                s.style.width='3px'; s.style.height='3px'; s.style.left=x+'px'; s.style.top=y+'px';
+                let cX=x, cY=y, op=1; document.body.appendChild(s);
+                const m = setInterval(()=>{ cX+=(Math.random()-0.5)*4; cY+=(Math.random()-0.5)*4; op-=0.1; s.style.left=cX+'px'; s.style.top=cY+'px'; s.style.opacity=op; if(op<=0){clearInterval(m);s.remove();} },30);
+            }
         }
-        window.addEventListener('resize', resizeSnakeCanvas); resizeSnakeCanvas();
+        function evolveLetter(l) {
+            if (l.textContent === ' ' || l.classList.contains('revealed') || l.classList.contains('spell-attempt')) return;
+            l.classList.add('spell-attempt');
+            setTimeout(() => {
+                l.classList.remove('spell-attempt'); l.classList.add('weaving-essence');
+                const r = l.getBoundingClientRect(); spawnStrands(r.left+window.scrollX, r.top+window.scrollY);
+                setTimeout(() => { l.classList.remove('weaving-essence'); l.textContent = l.dataset.real; l.classList.add('revealed'); }, 200);
+            }, 100);
+        }
+        container.querySelectorAll('.sunny-letter').forEach(l => { l.addEventListener('mouseenter', () => evolveLetter(l)); });
 
+        const sCanvas = document.getElementById('snake-canvas'); const sCtx = sCanvas.getContext('2d');
+        function resSnake() { sCanvas.width = sCanvas.parentElement.offsetWidth; sCanvas.height = sCanvas.parentElement.offsetHeight; }
         document.getElementById('mass-btn').addEventListener('click', () => {
-            resizeSnakeCanvas();
-            let snakeX = -50;
-            const snakeY = sCanvas.height / 2;
+            resSnake(); let snakeX = -60; const snakeY = sCanvas.height / 2;
             const letters = container.querySelectorAll('.sunny-letter');
-
             function drawSnake() {
                 sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
-                
-                // Desenha corpo da serpente flutuante/escura
-                sCtx.fillStyle = "rgba(5, 6, 8, 0.95)";
-                sCtx.shadowBlur = 20;
-                sCtx.shadowColor = "#000";
-                
+                sCtx.fillStyle = "rgba(4, 5, 7, 0.98)"; sCtx.shadowBlur = 15; sCtx.shadowColor = "#000";
                 sCtx.beginPath();
-                for (let i = 0; i < 120; i++) {
-                    const x = snakeX - i * 2;
-                    const y = snakeY + Math.sin(x * 0.05) * 40; // Movimento ondulado de serpente
-                    const size = Math.max(0, 35 - i * 0.25); // Afunilamento do rabo
-                    if(x > -50) sCtx.arc(x, y, size, 0, Math.PI * 2);
+                for (let i = 0; i < 100; i++) {
+                    const x = snakeX - i * 2.5; const y = snakeY + Math.sin(x * 0.04) * 35;
+                    if(x > -50) sCtx.arc(x, y, Math.max(0, 30 - i*0.25), 0, Math.PI * 2);
                 }
                 sCtx.fill();
-
-                // Verifica colisão da cabeça da serpente com as letras para esmagá-las e traduzi-as
                 letters.forEach(l => {
                     if (l.textContent === ' ' || l.classList.contains('revealed')) return;
-                    const rect = l.getBoundingClientRect();
-                    const containerRect = sCanvas.getBoundingClientRect();
-                    const lX = rect.left - containerRect.left;
-                    
-                    if (snakeX > lX) {
-                        l.textContent = l.dataset.real;
-                        l.classList.add('revealed');
-                    }
+                    const lX = l.getBoundingClientRect().left - sCanvas.getBoundingClientRect().left;
+                    if (snakeX > lX) { l.textContent = l.dataset.real; l.classList.add('revealed'); }
                 });
-
-                snakeX += 12; // Velocidade do ataque da serpente
-                if (snakeX < sCanvas.width + 300) {
-                    requestAnimationFrame(drawSnake);
-                } else {
-                    sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height); // Desaparece nas sombras
-                }
-            }
-            drawSnake();
+                snakeX += 14;
+                if (snakeX < sCanvas.width + 250) requestAnimationFrame(drawSnake);
+                else sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+            } drawSnake();
         });
     </script>
 </body>

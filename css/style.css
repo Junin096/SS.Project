@@ -57,3 +57,29 @@
     margin: 10px 0 5px 0;
     letter-spacing: 1px;
 }
+.back-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    z-index: 20;
+    position: relative;
+}
+.back-btn {
+    background: transparent;
+    border: 1px solid #4f5b73;
+    padding: 10px 30px;
+    border-radius: 4px;
+    color: #8a95a5;
+    font-family: monospace;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+.back-btn:hover {
+    background: #11141a;
+    border-color: #cbd5e1;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+

@@ -4,43 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Alma - Cassie</title>
-    <link rel="stylesheet" href="../css/style.css?v=8">
-    
     <style>
         body { background-color: #020509 !important; overflow-x: hidden; margin: 0; padding: 0; }
 
-        .mass-translate-container { display: flex; justify-content: center; margin-bottom: 25px; }
+        .mass-translate-container { display: flex; justify-content: center; margin-bottom: 25px; margin-top: 20px; }
         .mass-translate-btn {
             background: #091424; border: 1px solid #1a3a66; padding: 10px 20px; border-radius: 4px;
-            color: #527bb0; font-family: monospace; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            color: #527bb0; font-family: monospace; cursor: pointer; display: flex; align-items: center; gap: 10px; z-index: 30; position: relative;
         }
         .mass-translate-btn:hover { border-color: #00aaff; color: #fff; }
 
-        .character-container {
-            display: flex; gap: 25px; background: rgba(3, 8, 16, 0.98);
-            border: 1px solid #0b1d3a; padding: 25px; border-radius: 4px; align-items: center;
-            position: relative;
-        }
+        .mystic-nebula { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 130vw; height: 130vh; background: radial-gradient(circle, rgba(0,80,150,0.07) 0%, transparent 60%); filter: blur(50px); pointer-events: none; z-index: 1; animation: neb 8s infinite ease-in-out; }
+        @keyframes neb { 0%, 100% { transform: translate(-50%,-50%) scale(1); } 50% { transform: translate(-48%,-51%) scale(1.08); } }
 
-        .cassie-letter { display: inline-block; font-family: serif; color: transparent; text-shadow: 0 0 8px rgba(0, 170, 255, 0.6); transition: all 0.4s; }
-        .cassie-letter.revealed { color: #ffe7a3 !important; text-shadow: 0 0 6px #ffd700 !important; }
+        .content-wrapper { position: relative; z-index: 10; max-width: 750px; width: 100%; margin: 0 auto; padding: 5vh 20px 40px 20px; box-sizing: border-box; }
+        .character-container { display: flex; gap: 25px; background: rgba(3,8,16,0.97); border: 1px solid #0b1d3a; padding: 25px; border-radius: 4px; align-items: center; position: relative; }
+        @media (max-width: 600px) { .character-container { flex-direction: column; text-align: center; } }
+        
+        body.transcendent-active .character-container { border-color: #00aaff; box-shadow: 0 0 25px rgba(0,170,255,0.3); }
+        .character-img { width: 180px; height: 240px; object-fit: cover; border: 1px solid #0b1d3a; filter: grayscale(60%) brightness(50%); }
 
+        .cassie-rune-text p { margin: 12px 0; font-family: monospace; font-size: 16px; min-height: 20px; color: #41536b; }
+        .cassie-letter { display: inline-block; font-family: serif; color: transparent; text-shadow: 0 0 8px rgba(0, 170, 255, 0.7); filter: blur(1px); transition: all 0.3s; }
+        .cassie-letter.unwinding { color: #00e1ff !important; text-shadow: 0 0 15px #00aaff !important; transform: rotate(360deg) scale(1.3); filter: blur(0px); }
+        .cassie-letter.revealed { color: #ffe7a3 !important; text-shadow: 0 0 6px #ffd700 !important; transform: scale(1); filter: blur(0px); }
+
+        .fate-thread { position: fixed; pointer-events: none; z-index: 100; background: linear-gradient(90deg, #00aaff, #ffd700); box-shadow: 0 0 6px #00aaff; height: 1px; transform-origin: left center; }
         #fate-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
+        #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
+
+        .back-btn-container { display: flex; justify-content: center; margin-top: 40px; z-index: 20; position: relative; }
+        .back-btn { background: transparent; border: 1px solid #1a3a66; padding: 10px 30px; border-radius: 4px; color: #527bb0; font-family: monospace; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
+        .back-btn:hover { background: #091424; border-color: #ffd700; color: #fff; box-shadow: 0 0 15px rgba(255,215,0,0.1); }
     </style>
 </head>
 <body>
 
-    <div class="content-wrapper" style="max-width: 750px; margin: 0 auto; padding: 5vh 20px;">
+    <div class="mystic-nebula"></div>
+    <canvas id="ambient-canvas"></canvas>
+
+    <div class="content-wrapper">
         <div class="mass-translate-container">
             <button class="mass-translate-btn" id="mass-btn">
-                <img src="../img/cassiechibi.jpg" alt="🔮" style="width:18px;" class="mass-translate-icon">
+                <img src="../imagens/translate-icon.png" alt="🔮" style="width:18px;">
                 Romper Fios do Destino
             </button>
         </div>
 
         <div class="character-container">
             <canvas id="fate-canvas"></canvas>
-            <img src="../imagens/Cassie.jpg" alt="Cassie" style="width:180px;" class="character-img">
+            <img src="../imagens/Cassie.jpg" alt="Cassie" class="character-img">
             
             <div class="cassie-rune-text" id="cassie-soul-core">
                 <p>Nome Verdadeiro: Canção dos Caídos</p>
@@ -50,80 +63,66 @@
                 <p>Atributos: [Revelação do Destino], [Olhos do Passado], [Visão Compulsiva]</p>
             </div>
         </div>
+
+        <div class="back-btn-container">
+            <a href="../index.html" class="back-btn">← Retornar à Base</a>
+        </div>
     </div>
 
     <script>
+        const canvas = document.getElementById('ambient-canvas'); const ctx = canvas.getContext('2d');
+        let lines = []; function resCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resCanvas); resCanvas();
+        class Line { constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.len = Math.random()*60+30; this.speed = 0.2; this.angle = Math.random()*Math.PI*2; } update() { this.x += Math.cos(this.angle)*this.speed; this.y += Math.sin(this.angle)*this.speed; } draw() { ctx.globalAlpha = 0.15; ctx.strokeStyle = Math.random()>0.5?"#0055ff":"#cca100"; ctx.beginPath(); ctx.moveTo(this.x,this.y); ctx.lineTo(this.x+Math.cos(this.angle)*this.len,this.y+Math.sin(this.angle)*this.len); ctx.stroke(); } }
+        for(let i=0;i<20;i++) lines.push(new Line());
+        function anim() { ctx.clearRect(0,0,canvas.width,canvas.height); lines.forEach(l=>{l.update();l.draw();}); requestAnimationFrame(anim); } anim();
+
         const runes = ['ᛈ', 'ᛉ', 'ᛊ', 'ᛋ', 'ᛏ', 'ᛐ', 'ᛑ'];
         const container = document.getElementById('cassie-soul-core');
-        const paragraphs = container.querySelectorAll('p');
-
-        paragraphs.forEach(p => {
-            const originalText = p.textContent; p.textContent = '';
-            for (let i = 0; i < originalText.length; i++) {
-                const span = document.createElement('span'); 
-                span.classList.add('cassie-letter');
-                span.dataset.real = originalText[i];
-                span.textContent = originalText[i] === ' ' ? ' ' : runes[Math.floor(Math.random() * runes.length)];
+        container.querySelectorAll('p').forEach(p => {
+            const txt = p.textContent; p.textContent = '';
+            for (let i = 0; i < txt.length; i++) {
+                const span = document.createElement('span'); span.classList.add('cassie-letter');
+                span.dataset.real = txt[i]; span.textContent = txt[i] === ' ' ? ' ' : runes[Math.floor(Math.random() * runes.length)];
                 p.appendChild(span);
             }
         });
 
-        const fCanvas = document.getElementById('fate-canvas');
-        const fCtx = fCanvas.getContext('2d');
+        function spawnThread(x,y){
+            const t = document.createElement('div'); t.classList.add('fate-thread');
+            const ang = Math.random()*Math.PI*2; const dist = 50;
+            t.style.width = dist+'px'; t.style.left=x+'px'; t.style.top=y+'px'; t.style.transform=`rotate(${ang}rad)`;
+            document.body.appendChild(t); let op=1;
+            const m = setInterval(()=>{ op-=0.1; t.style.opacity=op; if(op<=0){clearInterval(m);t.remove();} },30);
+        }
+        function untangleLetter(l){
+            if(l.textContent===' ' || l.classList.contains('revealed') || l.classList.contains('unwinding')) return;
+            document.body.classList.add('transcendent-active'); l.classList.add('unwinding');
+            const r = l.getBoundingClientRect(); spawnThread(r.left+window.scrollX, r.top+window.scrollY);
+            setTimeout(()=>{ l.classList.remove('unwinding'); l.textContent=l.dataset.real; l.classList.add('revealed'); document.body.classList.remove('transcendent-active'); },200);
+        }
+        container.querySelectorAll('.cassie-letter').forEach(l=>{ l.addEventListener('mouseenter', ()=>untangleLetter(l)); });
+
+        const fCanvas = document.getElementById('fate-canvas'); const fCtx = fCanvas.getContext('2d');
         function resFate() { fCanvas.width = fCanvas.parentElement.offsetWidth; fCanvas.height = fCanvas.parentElement.offsetHeight; }
-        window.addEventListener('resize', resFate); resFate();
-
         document.getElementById('mass-btn').addEventListener('click', () => {
-            resFate();
-            let threads = [];
-            // Cria teia de fios dourados complexa cruzando o card
-            for(let i=0; i<15; i++) {
-                threads.push({
-                    sx: Math.random() * fCanvas.width, sy: 0,
-                    ex: Math.random() * fCanvas.width, ey: fCanvas.height,
-                    splitProgress: 0
-                });
-            }
-
-            function animateThreads() {
-                fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height);
-                fCtx.strokeStyle = "#ffd700";
-                fCtx.shadowColor = "#ffd700";
-                fCtx.lineWidth = 1.5;
-
-                let active = false;
+            resFate(); let threads = [];
+            for(let i=0; i<12; i++) { threads.push({ sx: Math.random()*fCanvas.width, sy: 0, ex: Math.random()*fCanvas.width, ey: fCanvas.height, split: 0 }); }
+            function drawThreads() {
+                fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height); fCtx.strokeStyle = "#ffd700"; fCtx.lineWidth = 1.5;
+                let running = false;
                 threads.forEach(t => {
-                    fCtx.shadowBlur = 8;
-                    const midX = (t.sx + t.ex) / 2;
-                    const midY = (t.sy + t.ey) / 2;
-
-                    if (t.splitProgress < 1) {
-                        active = true;
-                        t.splitProgress += 0.08;
-                        
-                        // Desenha as duas metades se separando/rompendo em direção aos nós originais
-                        fCtx.beginPath();
-                        fCtx.moveTo(t.sx, t.sy);
-                        fCtx.lineTo(t.sx + (midX - t.sx) * (1 - t.splitProgress), t.sy + (midY - t.sy) * (1 - t.splitProgress));
-                        fCtx.stroke();
-
-                        fCtx.beginPath();
-                        fCtx.moveTo(t.ex, t.ey);
-                        fCtx.lineTo(t.ex + (midX - t.ex) * (1 - t.splitProgress), t.ey + (midY - t.ey) * (1 - t.splitProgress));
-                        fCtx.stroke();
+                    if (t.split < 1) {
+                        running = true; t.split += 0.08;
+                        const mx = (t.sx+t.ex)/2; const my = (t.sy+t.ey)/2;
+                        fCtx.beginPath(); fCtx.moveTo(t.sx, t.sy); fCtx.lineTo(t.sx+(mx-t.sx)*(1-t.split), t.sy+(my-t.sy)*(1-t.split)); fCtx.stroke();
+                        fCtx.beginPath(); fCtx.moveTo(t.ex, t.ey); fCtx.lineTo(t.ex+(mx-t.ex)*(1-t.split), t.ey+(my-t.ey)*(1-t.split)); fCtx.stroke();
                     }
                 });
-
-                // Revela as letras sincronizado com o romper das amarras
-                container.querySelectorAll('.cassie-letter').forEach(l => {
-                    l.textContent = l.dataset.real;
-                    l.classList.add('revealed');
-                });
-
-                if (active) requestAnimationFrame(animateThreads);
+                container.querySelectorAll('.cassie-letter').forEach(l => { l.textContent = l.dataset.real; l.classList.add('revealed'); });
+                if (running) requestAnimationFrame(drawThreads);
                 else fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height);
-            }
-            animateThreads();
+            } drawThreads();
         });
     </script>
 </body>
