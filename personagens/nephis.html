@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro: Nephis</title>
+    <link rel="stylesheet" href="../css/style.css?v=2">
+    <style>
+        body { background-color: #0f0f0f !important; }
+        .card-container { display: flex; gap: 40px; align-items: flex-start; max-width: 900px; margin: 0 auto; }
+        .character-img { width: 350px; border: 2px solid #fff; box-shadow: 0 0 40px rgba(255,255,255,0.1); border-radius: 8px; }
+        .spell-description { flex: 1; background: rgba(20, 20, 20, 0.9) !important; border-color: #444 !important; }
+        /* Nephis brilha quando revelada */
+        .real-char { color: #fff !important; text-shadow: 0 0 10px #fff, 0 0 20px #f0f0f0 !important; }
+        .rune-char { color: #333 !important; }
+    </style>
+</head>
+<body>
+    <div style="width: 100%; padding: 40px;">
+        <nav class="nav-menu" style="display: flex; gap: 20px; margin-bottom: 40px; justify-content: center;">
+            <a href="../index.html" class="nav-link">[ Início ]</a>
+            <a href="../personagens.html" class="nav-link">[ Personagens ]</a>
+        </nav>
+
+        <div class="card-container">
+            <img src="../img/nephis.jpg" alt="Nephis" class="character-img">
+            <div style="flex: 1;">
+                <h1 style="color: #666; letter-spacing: 5px; margin-bottom: 20px;">NEPHIS</h1>
+                <div class="spell-description" id="nephis-text">
+                    <p>Nome Verdadeiro: Estrela Mutante</p>
+                    <p>Rank: Adormecida</p>
+                    <p>Classe: Monstro</p>
+                    <p>Atributos: [Fogo da Paixão] [Linhagem do Sol]</p>
+                    <p>[A chama que consome o destino.]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/spell.js"></script>
+    <script>if(typeof initSpellText === 'function') initSpellText('nephis-text');</script>
+</body>
+</html>

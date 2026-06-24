@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro: Cassia</title>
+    <link rel="stylesheet" href="../css/style.css?v=2">
+    <style>
+        body { background-color: #020408 !important; }
+        .card-container { display: flex; gap: 40px; align-items: flex-start; max-width: 900px; margin: 0 auto; }
+        .character-img { width: 350px; border: 2px solid #1a2a4a; box-shadow: 0 0 30px rgba(26, 42, 74, 0.5); border-radius: 8px; }
+        .spell-description { flex: 1; background: rgba(5, 10, 20, 0.9) !important; border-color: #1a2a4a !important; }
+        /* Cassia tem um brilho azul estelar */
+        .real-char { color: #a0c0ff !important; text-shadow: 0 0 8px #4a90e2 !important; }
+        .rune-char { color: #1a2a4a !important; }
+    </style>
+</head>
+<body>
+    <div style="width: 100%; padding: 40px;">
+        <nav class="nav-menu" style="display: flex; gap: 20px; margin-bottom: 40px; justify-content: center;">
+            <a href="../index.html" class="nav-link">[ Início ]</a>
+            <a href="../personagens.html" class="nav-link">[ Personagens ]</a>
+        </nav>
+
+        <div class="card-container">
+            <img src="../img/cassia.jpg" alt="Cassia" class="character-img">
+            <div style="flex: 1;">
+                <h1 style="color: #1a2a4a; letter-spacing: 5px; margin-bottom: 20px;">CASSIA</h1>
+                <div class="spell-description" id="cassia-text">
+                    <p>Nome: Cassia (Cassie)</p>
+                    <p>Rank: Adormecida</p>
+                    <p>Atributos: [Revelação do Destino]</p>
+                    <p>Habilidade: Ver o que não pode ser visto.</p>
+                    <p>[Cega para o presente, desperta para o futuro.]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/spell.js"></script>
+    <script>if(typeof initSpellText === 'function') initSpellText('cassia-text');</script>
+</body>
+</html>
