@@ -2,77 +2,36 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Alma - Sunless</title>
     <link rel="stylesheet" href="../css/style.css">
-    
-    <style>
-        /* O Vazio: Fundo ainda mais escuro */
-        body { background-color: #020202; }
-
-        /* A Caixa do Feitiço: Bordas mais escuras que o normal */
-        .spell-description { 
-            background: rgba(3, 3, 3, 0.95); 
-            border-color: #111; 
-        }
-
-        /* Runas: Quase mescladas com a escuridão */
-        .rune-char { color: #1a1a1a; } 
-
-        /* Letras Traduzidas: Cinza fumaça (Ausência de luz) */
-        .real-char { 
-            color: #8c8c8c; 
-            text-shadow: 0 0 8px #333, 0 0 15px #111; 
-        }
-
-        /* Estilhaço Negro: Diferentes tons de escuridão */
-        .char-dust {
-            background: #000;
-            box-shadow: 0 0 5px #111, 0 0 12px #222;
-        }
-
-        /* Rastro do Mouse: Sombras seguindo o cursor */
-        .mouse-trail {
-            background: #0a0a0a;
-            box-shadow: 0 0 10px #000, 0 0 20px #111;
-        }
-        
-        .mouse-dust {
-            background: #000;
-            box-shadow: 0 0 6px #111;
-        }
-
-        /* Título e Menu com estética sombria */
-        .character-title { 
-            text-align: center; color: #555; 
-            text-shadow: 0 0 10px rgba(0,0,0,0.8); 
-            letter-spacing: 4px; margin-bottom: 40px; 
-        }
-        .nav-link:hover { color: #777; text-shadow: 0 0 8px #333; }
-    </style>
 </head>
 <body>
 
-    <div style="max-width: 700px; width: 100%;">
-        <nav class="nav-menu">
-            <a href="../index.html" class="nav-link">[ Início ]</a>
-            <a href="../personagens.html" class="nav-link">[ Personagens ]</a>
-            <a href="sunny.html" class="nav-link" style="color: #666;">[ Sunny ]</a>
+    <div style="max-width: 700px; width: 100%; margin: 0 auto; padding-top: 10vh;">
+        <nav class="nav-menu" style="display: flex; gap: 20px; margin-bottom: 30px; justify-content: flex-start;">
+            <a href="../index.html" class="nav-link" style="color: #888; text-decoration: none; font-family: monospace;">[ Início ]</a>
+            <a href="../personagens.html" class="nav-link" style="color: #888; text-decoration: none; font-family: monospace;">[ Personagens ]</a>
+            <a href="#" class="nav-link" style="color: #fff; text-decoration: none; font-family: monospace;">[ Sunny ]</a>
         </nav>
 
-        <h1 class="character-title">REGISTRO DE ALMA</h1>
+        <h1 style="color: #444; font-family: serif; letter-spacing: 5px; margin-bottom: 30px;">REGISTRO DE ALMA</h1>
 
-        <div class="spell-description" id="sunny-status">
+        <div class="spell-description" id="sunny-text">
             <p>Nome Verdadeiro: Perdido da Luz</p>
             <p>Nome: Sunless</p>
             <p>Rank: Adormecido</p>
             <p>Classe: Terror</p>
-            <p>Atributo: [Mestre das Sombras]</p>
+            <p>Atributos: [Mestre das Sombras]</p>
         </div>
     </div>
 
     <script src="../js/spell.js"></script>
     <script>
-        initSpellText('sunny-status');
+        // Dispara a magia do seu arquivo spell.js
+        if (typeof initSpellText === 'function') {
+            initSpellText('sunny-text');
+        }
     </script>
 </body>
 </html>
