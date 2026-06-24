@@ -3,39 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro: Sunless</title>
+    <title>Registro de Alma - Sunless</title>
     <link rel="stylesheet" href="../css/style.css?v=2">
     <style>
         body { background-color: #050505 !important; }
-        .card-container { display: flex; gap: 40px; align-items: flex-start; max-width: 900px; margin: 0 auto; }
-        .character-img { width: 350px; border: 2px solid #1a1a1a; box-shadow: 0 0 30px rgba(0,0,0,1); border-radius: 8px; }
-        .spell-description { flex: 1; background: rgba(10, 10, 10, 0.9) !important; border-color: #222 !important; }
-        .real-char { color: #888 !important; text-shadow: 0 0 5px #000 !important; }
-        .nav-link:hover { color: #555 !important; }
+        .character-container {
+            display: flex;
+            gap: 25px;
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid #222;
+            padding: 25px;
+            border-radius: 4px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
+            align-items: center;
+        }
+        .character-img {
+            width: 180px;
+            height: 240px;
+            object-fit: cover;
+            border: 1px solid #333;
+            border-radius: 2px;
+            filter: grayscale(40%) brightness(70%) contrast(110%);
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            transition: all 0.5s ease;
+        }
+        .character-img:hover {
+            filter: grayscale(0%) brightness(90%);
+            border-color: #555;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        .spell-description { background: none !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
+        .rune-char { color: #1c1c1c !important; } 
+        .real-char { color: #9c9c9c !important; text-shadow: 0 0 8px #333 !important; }
     </style>
 </head>
 <body>
-    <div style="width: 100%; padding: 40px;">
-        <nav class="nav-menu" style="display: flex; gap: 20px; margin-bottom: 40px; justify-content: center;">
-            <a href="../index.html" class="nav-link">[ Início ]</a>
-            <a href="../personagens.html" class="nav-link">[ Personagens ]</a>
+
+    <div style="max-width: 750px; width: 100%; margin: 0 auto; padding-top: 10vh;">
+        <nav class="nav-menu" style="display: flex; gap: 20px; margin-bottom: 30px; justify-content: flex-start;">
+            <a href="../index.html" class="nav-link" style="color: #888; text-decoration: none; font-family: monospace;">[ Início ]</a>
+            <a href="../personagens.html" class="nav-link" style="color: #888; text-decoration: none; font-family: monospace;">[ Personagens ]</a>
+            <a href="#" class="nav-link" style="color: #fff; text-decoration: none; font-family: monospace;">[ Sunny ]</a>
         </nav>
 
-        <div class="card-container">
-            <img src="../img/sunny.jpg" alt="Sunny" class="character-img">
-            <div style="flex: 1;">
-                <h1 style="color: #333; letter-spacing: 5px; margin-bottom: 20px;">SUNLESS</h1>
-                <div class="spell-description" id="sunny-text">
-                    <p>Nome Verdadeiro: Perdido da Luz</p>
-                    <p>Rank: Adormecido</p>
-                    <p>Classe: Terror</p>
-                    <p>Núcleos de Alma: 1</p>
-                    <p>Atributos: [Mestre das Sombras] [Trama do Destino]</p>
-                </div>
+        <h1 style="color: #333; font-family: serif; letter-spacing: 5px; margin-bottom: 20px; text-shadow: 0 0 10px #000;">REGISTRO DE ALMA</h1>
+
+        <div class="character-container">
+            <img src="../img/Sunless.jpg" alt="Sunless" class="character-img">
+            
+            <div class="spell-description" id="sunny-text">
+                <p>Nome Verdadeiro: Perdido da Luz</p>
+                <p>Nome: Sunless</p>
+                <p>Rank: Adormecido</p>
+                <p>Classe: Terror</p>
+                <p>Atributos: [Mestre das Sombras]</p>
             </div>
         </div>
     </div>
-    <script src="../js/spell.js"></script>
-    <script>if(typeof initSpellText === 'function') initSpellText('sunny-text');</script>
+
+    <script src="../js/spell.js?v=2"></script>
+    <script>
+        if (typeof initSpellText === 'function') { initSpellText('sunny-text'); }
+    </script>
 </body>
 </html>
