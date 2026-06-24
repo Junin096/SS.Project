@@ -4,128 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Alma - Cassie</title>
-    <link rel="stylesheet" href="../css/style.css?v=6">
+    <link rel="stylesheet" href="../css/style.css?v=8">
     
     <style>
-        body { 
-            background-color: #010306 !important; 
-            overflow-x: hidden;
-            position: relative;
-            margin: 0; padding: 0;
-        }
+        body { background-color: #020509 !important; overflow-x: hidden; margin: 0; padding: 0; }
 
-        /* --- NÉVOA MÍSTICA AZULADA DE FUNDO --- */
-        .mystic-nebula {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 140vw; height: 140vh;
-            background: radial-gradient(circle, rgba(0, 80, 150, 0.08) 0%, rgba(5, 15, 30, 0.03) 50%, rgba(0, 0, 0, 0) 80%);
-            filter: blur(60px);
-            pointer-events: none;
-            z-index: 1;
-            animation: nebulaPulse 8s infinite ease-in-out;
+        .mass-translate-container { display: flex; justify-content: center; margin-bottom: 25px; }
+        .mass-translate-btn {
+            background: #091424; border: 1px solid #1a3a66; padding: 10px 20px; border-radius: 4px;
+            color: #527bb0; font-family: monospace; cursor: pointer; display: flex; align-items: center; gap: 10px;
         }
-        @keyframes nebulaPulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.7; }
-            50% { transform: translate(-48%, -52%) scale(1.1) rotate(5deg); opacity: 1; }
-        }
+        .mass-translate-btn:hover { border-color: #00aaff; color: #fff; }
 
-        /* --- LAYOUT RESPONSIVO --- */
-        .content-wrapper {
-            position: relative;
-            z-index: 10;
-            max-width: 750px; width: 100%; margin: 0 auto; 
-            padding: 10vh 20px 40px 20px;
-            box-sizing: border-box;
-        }
         .character-container {
-            display: flex; gap: 25px;
-            background: rgba(2, 5, 10, 0.96);
-            border: 1px solid #0a1525;
-            padding: 25px; border-radius: 4px;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
-            align-items: center;
-            transition: border-color 0.5s ease;
+            display: flex; gap: 25px; background: rgba(3, 8, 16, 0.98);
+            border: 1px solid #0b1d3a; padding: 25px; border-radius: 4px; align-items: center;
+            position: relative;
         }
 
-        @media (max-width: 600px) {
-            .character-container { flex-direction: column; text-align: center; padding: 20px; }
-            .nav-menu { justify-content: center !important; }
-        }
+        .cassie-letter { display: inline-block; font-family: serif; color: transparent; text-shadow: 0 0 8px rgba(0, 170, 255, 0.6); transition: all 0.4s; }
+        .cassie-letter.revealed { color: #ffe7a3 !important; text-shadow: 0 0 6px #ffd700 !important; }
 
-        /* CARD DA CASSIE: Olhos irradiam luz azul ao interagir */
-        .character-img {
-            width: 180px; height: 240px; object-fit: cover;
-            border: 1px solid #0a1a30; border-radius: 2px;
-            filter: grayscale(70%) brightness(50%) contrast(110%);
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .character-container:hover .character-img,
-        .character-container:active .character-img,
-        body.transcendent-active .character-img {
-            filter: grayscale(20%) brightness(90%) contrast(115%);
-            border-color: #00aaff;
-            box-shadow: 0 0 30px rgba(0, 170, 255, 0.45);
-        }
-
-        /* --- NÉVOA AZUL E DESEMBARAÇAR DAS RUNAS --- */
-        .cassie-rune-text { user-select: none; -webkit-user-select: none; cursor: pointer; width: 100%; }
-        .cassie-rune-text p { margin: 12px 0; font-family: monospace; font-size: 16px; min-height: 20px; }
-        
-        .cassie-letter { 
-            display: inline-block; 
-            font-family: serif; 
-            /* Texto começa oculto na Névoa Azulada */
-            color: transparent; 
-            text-shadow: 0 0 10px rgba(0, 170, 255, 0.85);
-            filter: blur(1px);
-            transition: all 0.4s ease;
-        }
-        
-        /* 1. Estágio: Desembaraçando (A Vontade girando e puxando os nós do destino) */
-        .cassie-letter.unwinding { 
-            color: #00e1ff !important;
-            text-shadow: 0 0 15px #00aaff, 0 0 30px #0055ff !important;
-            transform: rotate(360deg) scale(1.4);
-            filter: blur(0px);
-        }
-        
-        /* 2. Estágio: Destino Quebrado e Revelado em Ouro Absoluto */
-        .cassie-letter.revealed { 
-            color: #ffe7a3 !important; 
-            text-shadow: 0 0 8px #ffd700, 0 0 18px rgba(255, 215, 0, 0.4) !important;
-            transform: rotate(0deg) scale(1);
-            filter: blur(0px);
-        }
-
-        /* Fios da Vontade gerados por JS */
-        .fate-thread {
-            position: fixed; pointer-events: none; z-index: 100;
-            background: linear-gradient(90deg, #00aaff, #ffd700);
-            box-shadow: 0 0 8px #00aaff;
-            height: 1px; transform-origin: left center;
-        }
-
-        #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
+        #fate-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
     </style>
 </head>
 <body>
 
-    <div class="mystic-nebula"></div>
-    <canvas id="ambient-canvas"></canvas>
+    <div class="content-wrapper" style="max-width: 750px; margin: 0 auto; padding: 5vh 20px;">
+        <div class="mass-translate-container">
+            <button class="mass-translate-btn" id="mass-btn">
+                <img src="../imagens/translate-icon.png" alt="🔮" style="width:18px;" class="mass-translate-icon">
+                Romper Fios do Destino
+            </button>
+        </div>
 
-    <div class="content-wrapper">
-        <nav class="nav-menu" style="display: flex; gap: 20px; margin-bottom: 30px; justify-content: flex-start;">
-            <a href="../index.html" class="nav-link" style="color: #334455; text-decoration: none; font-family: monospace;">[ Início ]</a>
-            <a href="../personagens.html" class="nav-link" style="color: #334455; text-decoration: none; font-family: monospace;">[ Personagens ]</a>
-            <a href="#" class="nav-link" style="color: #fff; text-decoration: none; font-family: monospace; text-shadow: 0 0 8px #00aaff;">[ Cassie ]</a>
-        </nav>
-
-        <h1 style="color: #005588; font-family: serif; letter-spacing: 5px; margin-bottom: 20px; text-shadow: 0 0 15px rgba(0,170,255,0.2); text-align: center;">REGISTRO DE ALMA</h1>
-
-        <div class="character-container" id="cassie-card">
-            <img src="../imagens/Cassie.jpg" alt="Cassie" class="character-img">
+        <div class="character-container">
+            <canvas id="fate-canvas"></canvas>
+            <img src="../imagens/Cassie.jpg" alt="Cassie" style="width:180px;" class="character-img">
             
             <div class="cassie-rune-text" id="cassie-soul-core">
                 <p>Nome Verdadeiro: Canção dos Caídos</p>
@@ -138,56 +53,7 @@
     </div>
 
     <script>
-        // --- 1. FIOS DO DESTINO E MEMÓRIAS (Canvas Dinâmico) ---
-        const canvas = document.getElementById('ambient-canvas');
-        const ctx = canvas.getContext('2d');
-        let lines = [];
-        
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resizeCanvas); resizeCanvas();
-
-        // Linhas fluídas imitando os fios dourados/azuis tecendo o destino ao fundo
-        class FateLine {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.length = Math.random() * 80 + 40;
-                this.speed = Math.random() * 0.4 + 0.1;
-                this.angle = Math.random() * Math.PI * 2;
-                // Transição sutil entre azul místico e ouro
-                this.color = Math.random() > 0.5 ? '#0066cc' : '#cca100';
-                this.alpha = Math.random() * 0.3 + 0.1;
-            }
-            update() {
-                this.x += Math.cos(this.angle) * this.speed;
-                this.y += Math.sin(this.angle) * this.speed;
-                if (this.x < -100 || this.x > canvas.width + 100 || this.y < -100 || this.y > canvas.height + 100) {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                }
-            }
-            draw() {
-                ctx.globalAlpha = this.alpha;
-                ctx.strokeStyle = this.color;
-                ctx.lineWidth = 0.8;
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y);
-                ctx.lineTo(this.x + Math.cos(this.angle) * this.length, this.y + Math.sin(this.angle) * this.length);
-                ctx.stroke();
-            }
-        }
-
-        for (let i = 0; i < 25; i++) { lines.push(new FateLine()); }
-
-        function animateAmbient() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            lines.forEach(l => { l.update(); l.draw(); });
-            requestAnimationFrame(animateAmbient);
-        }
-        animateAmbient();
-
-        // --- 2. SISTEMA DE REVELAÇÃO TRANS-TRANSCENDENTE ---
-        const runes = ['ᛈ', 'ᛉ', 'ᛊ', 'ᛋ', 'ᛏ', 'ᛐ', 'ᛑ', 'ᛒ', 'ᛓ', 'ᛔ', 'ᛕ', 'ᛖ', 'ᛗ', 'ᛘ', 'ᛙ', 'ᛚ'];
+        const runes = ['ᛈ', 'ᛉ', 'ᛊ', 'ᛋ', 'ᛏ', 'ᛐ', 'ᛑ'];
         const container = document.getElementById('cassie-soul-core');
         const paragraphs = container.querySelectorAll('p');
 
@@ -197,87 +63,68 @@
                 const span = document.createElement('span'); 
                 span.classList.add('cassie-letter');
                 span.dataset.real = originalText[i];
-                // Runas flutuando imersas na névoa azulada
                 span.textContent = originalText[i] === ' ' ? ' ' : runes[Math.floor(Math.random() * runes.length)];
                 p.appendChild(span);
             }
         });
 
-        // Efeito visual físico: Tentáculos invisíveis/fios puxando a runa
-        function spawnFateThread(startX, startY) {
-            const thread = document.createElement('div');
-            thread.classList.add('fate-thread');
-            
-            // Origina de direções místicas aleatórias ao redor da letra
-            const angle = Math.random() * Math.PI * 2;
-            const distance = Math.random() * 60 + 40;
-            const endX = startX + Math.cos(angle) * distance;
-            const endY = startY + Math.sin(angle) * distance;
+        const fCanvas = document.getElementById('fate-canvas');
+        const fCtx = fCanvas.getContext('2d');
+        function resFate() { fCanvas.width = fCanvas.parentElement.offsetWidth; fCanvas.height = fCanvas.parentElement.offsetHeight; }
+        window.addEventListener('resize', resFate); resFate();
 
-            thread.style.width = distance + 'px';
-            thread.style.left = startX + 'px';
-            thread.style.top = startY + 'px';
-            thread.style.transform = `rotate(${angle}rad)`;
-            thread.style.opacity = '1';
+        document.getElementById('mass-btn').addEventListener('click', () => {
+            resFate();
+            let threads = [];
+            // Cria teia de fios dourados complexa cruzando o card
+            for(let i=0; i<15; i++) {
+                threads.push({
+                    sx: Math.random() * fCanvas.width, sy: 0,
+                    ex: Math.random() * fCanvas.width, ey: fCanvas.height,
+                    splitProgress: 0
+                });
+            }
 
-            document.body.appendChild(thread);
+            function animateThreads() {
+                fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height);
+                fCtx.strokeStyle = "#ffd700";
+                fCtx.shadowColor = "#ffd700";
+                fCtx.lineWidth = 1.5;
 
-            // Recolhe o fio rapidamente como se puxasse o nó da runa
-            let op = 1;
-            const pull = setInterval(() => {
-                op -= 0.08;
-                thread.style.opacity = op;
-                if (op <= 0) { clearInterval(pull); thread.remove(); }
-            }, 30);
-        }
+                let active = false;
+                threads.forEach(t => {
+                    fCtx.shadowBlur = 8;
+                    const midX = (t.sx + t.ex) / 2;
+                    const midY = (t.sy + t.ey) / 2;
 
-        function untangleLetter(letter) {
-            if (letter.textContent === ' ' || letter.classList.contains('revealed') || letter.classList.contains('unwinding')) return;
-            
-            // Ativa o flash azul nos "olhos" do card simulando o início do transe
-            document.body.classList.add('transcendent-active');
-            
-            letter.classList.add('unwinding');
-            const rect = letter.getBoundingClientRect();
-            const cX = rect.left + (rect.width/2) + window.scrollX;
-            const cY = rect.top + (rect.height/2) + window.scrollY;
-            
-            // Dispara fios de Vontade se entrelaçando
-            spawnFateThread(cX, cY);
+                    if (t.splitProgress < 1) {
+                        active = true;
+                        t.splitProgress += 0.08;
+                        
+                        // Desenha as duas metades se separando/rompendo em direção aos nós originais
+                        fCtx.beginPath();
+                        fCtx.moveTo(t.sx, t.sy);
+                        fCtx.lineTo(t.sx + (midX - t.sx) * (1 - t.splitProgress), t.sy + (midY - t.sy) * (1 - t.splitProgress));
+                        fCtx.stroke();
 
-            setTimeout(() => {
-                letter.classList.remove('unwinding'); 
-                letter.textContent = letter.dataset.real; 
-                letter.classList.add('revealed');
-                
-                // Desativa o transe quando a poeira assenta
-                setTimeout(() => {
-                    if(!container.querySelector('.unwinding')) {
-                        document.body.classList.remove('transcendent-active');
+                        fCtx.beginPath();
+                        fCtx.moveTo(t.ex, t.ey);
+                        fCtx.lineTo(t.ex + (midX - t.ex) * (1 - t.splitProgress), t.ey + (midY - t.ey) * (1 - t.splitProgress));
+                        fCtx.stroke();
                     }
-                }, 400);
+                });
 
-            }, 250); // Tempo do giro de desembaraço
-        }
+                // Revela as letras sincronizado com o romper das amarras
+                container.querySelectorAll('.cassie-letter').forEach(l => {
+                    l.textContent = l.dataset.real;
+                    l.classList.add('revealed');
+                });
 
-        // Cascata harmoniosa de fios se desfazendo
-        function triggerFullCascade() {
-            container.querySelectorAll('.cassie-letter').forEach((l, idx) => { 
-                setTimeout(() => untangleLetter(l), idx * 22); 
-            });
-        }
-
-        // --- ACESSIBILIDADE TÁTIL REFINADA ---
-        container.querySelectorAll('.cassie-letter').forEach(l => { 
-            l.addEventListener('mouseenter', () => untangleLetter(l)); 
+                if (active) requestAnimationFrame(animateThreads);
+                else fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height);
+            }
+            animateThreads();
         });
-        container.addEventListener('click', triggerFullCascade);
-        container.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const el = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (el && el.classList.contains('cassie-letter')) { untangleLetter(el); }
-        }, { passive: false });
     </script>
 </body>
 </html>

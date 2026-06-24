@@ -4,81 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Alma - Lorde das Sombras</title>
-    <link rel="stylesheet" href="../css/style.css?v=7">
+    <link rel="stylesheet" href="../css/style.css?v=8">
     
     <style>
         body { 
-            background-color: #010101 !important; 
+            background-color: #0d0f12 !important; /* Tons de preto visíveis e diferenciados */
             overflow-x: hidden;
             position: relative;
             margin: 0; padding: 0;
         }
 
-        /* --- TEIAS DE ESSÊNCIA NEGRA NOS QUATRO CANTOS --- */
-        .essence-thread {
-            position: fixed;
-            width: 200px; height: 200px;
-            pointer-events: none;
-            z-index: 20;
-            opacity: 0.7;
-            animation: threadPulse 5s infinite ease-in-out;
+        /* --- DESIGN DO BOTÃO DE TRADUÇÃO EM MASSA --- */
+        .mass-translate-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
         }
-        .thread-tl { top: 0; left: 0; border-left: 3px solid #000; border-top: 3px solid #000; background: radial-gradient(circle at top left, rgba(0,0,0,1) 10%, rgba(15,15,15,0.3) 40%, transparent 70%); box-shadow: -10px -10px 30px #000; }
-        .thread-tr { top: 0; right: 0; border-right: 3px solid #000; border-top: 3px solid #000; background: radial-gradient(circle at top right, rgba(0,0,0,1) 10%, rgba(15,15,15,0.3) 40%, transparent 70%); box-shadow: 10px -10px 30px #000; }
-        .thread-bl { bottom: 0; left: 0; border-left: 3px solid #000; border-bottom: 3px solid #000; background: radial-gradient(circle at bottom left, rgba(0,0,0,1) 10%, rgba(15,15,15,0.3) 40%, transparent 70%); box-shadow: -10px 10px 30px #000; }
-        .thread-br { bottom: 0; right: 0; border-right: 3px solid #000; border-bottom: 3px solid #000; background: radial-gradient(circle at bottom right, rgba(0,0,0,1) 10%, rgba(15,15,15,0.3) 40%, transparent 70%); box-shadow: 10px 10px 30px #000; }
-
-        @keyframes threadPulse {
-            0%, 100% { transform: scale(1); opacity: 0.6; filter: blur(0px); }
-            50% { transform: scale(1.05); opacity: 0.9; filter: blur(1px); }
+        .mass-translate-btn {
+            background: #181b22;
+            border: 1px solid #2d333f;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: #8a95a5;
+            font-family: monospace;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-
-        /* --- SOMBRAS VAGAS QUE SE CURVAM/CUMPRIMENTAM --- */
-        .ambient-shadow {
-            position: fixed;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 0, 0, 0.98) 0%, rgba(10, 10, 10, 0.4) 50%, rgba(0, 0, 0, 0) 80%);
-            filter: blur(50px);
-            pointer-events: none;
-            z-index: 1;
+        .mass-translate-btn:hover {
+            border-color: #4f5b73;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255,255,255,0.05);
         }
-        /* Shadow 1: Sombra Superior Esquerda (Faz reverência em diagonal) */
-        .shadow-1 {
-            width: 650px; height: 650px;
-            top: -15%; left: -15%;
-            animation: shadowBowLeft 20s infinite ease-in-out;
-        }
-        /* Shadow 2: Sombra Inferior Direita (Gira e expande saudando) */
-        .shadow-2 {
-            width: 550px; height: 550px;
-            bottom: -10%; right: -10%;
-            animation: shadowBowRight 25s infinite ease-in-out;
+        .mass-translate-icon {
+            width: 18px; height: 18px;
+            object-fit: contain;
+            filter: brightness(0.8);
         }
 
-        @keyframes shadowBowLeft {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            45%, 55% { transform: translate(80px, 80px) scale(1.15) skewX(5deg); } /* Curvando-se para o leitor */
-        }
-        @keyframes shadowBowRight {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            40%, 60% { transform: translate(-70px, -50px) scale(1.2) skewY(-4deg); } /* Inclinando-se para o centro */
-        }
-
-        /* --- CONTAINER E LAYOUT RESPONSIVO --- */
-        .content-wrapper {
-            position: relative;
-            z-index: 10;
-            max-width: 750px; width: 100%; margin: 0 auto; 
-            padding: 10vh 20px 40px 20px;
-            box-sizing: border-box;
-        }
+        /* --- AJUSTE DE CONTRASTE DO CONTAINER --- */
         .character-container {
             display: flex; gap: 25px;
-            background: rgba(3, 3, 3, 0.99);
-            border: 1px solid #0d0d0d;
+            background: #13161c; /* Fundo que destaca o texto */
+            border: 1px solid #222730;
             padding: 25px; border-radius: 4px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             align-items: center;
+            position: relative;
         }
 
         @media (max-width: 600px) {
@@ -88,87 +63,51 @@
 
         .character-img {
             width: 180px; height: 240px; object-fit: cover;
-            border: 1px solid #111; border-radius: 2px;
-            filter: grayscale(100%) brightness(35%) contrast(130%);
-            transition: all 0.6s ease;
-        }
-        .character-container:hover .character-img,
-        .character-container:active .character-img {
-            filter: grayscale(40%) brightness(65%) contrast(115%);
-            border-color: #222;
-            box-shadow: 0 0 30px rgba(0,0,0,0.9);
+            border: 1px solid #2d333f; border-radius: 2px;
+            filter: grayscale(40%) brightness(75%);
         }
 
-        /* --- CONTROLE DAS SOMBRAS DAS LETRAS --- */
-        .sunny-rune-text { user-select: none; -webkit-user-select: none; cursor: pointer; width: 100%; }
+        /* --- COMPORTAMENTO VISÍVEL DAS LETRAS --- */
         .sunny-rune-text p { margin: 12px 0; font-family: monospace; font-size: 16px; min-height: 20px; }
         
         .sunny-letter { 
             display: inline-block; 
             font-family: serif; 
-            /* 1. Estado Inicial: Sombra Disforme sem forma */
-            color: transparent;
-            text-shadow: 0 0 14px rgba(0, 0, 0, 1), 0 0 20px rgba(0, 0, 0, 1);
-            filter: blur(6px);
-            transform: scale(1.1);
-            transition: all 0.3s ease;
+            color: #2d333f; /* Runas visíveis como névoa escura antes de traduzir */
+            text-shadow: 0 0 4px rgba(0,0,0,0.8);
+            transition: all 0.2s ease;
         }
-
-        /* 2. Estado: Tentativa Rúnica padrão do Feitiço */
-        .sunny-letter.spell-attempt {
-            color: #1a1a1a !important;
-            text-shadow: 0 0 5px #000 !important;
-            filter: blur(0px);
+        .sunny-letter.revealed { 
+            color: #cbd5e1 !important; /* Texto limpo e legível pós-tradução */
+            text-shadow: none !important;
             transform: scale(1);
         }
-        
-        /* 3. Estado: Rejeição e Tecitura da Essência Negra própria do Sunny */
-        .sunny-letter.weaving-essence { 
-            color: #000000 !important;
-            text-shadow: 0 0 12px #000000, 0 0 25px #111111 !important;
-            transform: scale(1.3) translateY(-2px);
-            filter: blur(1px);
-        }
-        
-        /* 4. Estado Final: Revelado pela Essência Escura */
-        .sunny-letter.revealed { 
-            color: #6a6a6a !important; 
-            text-shadow: 0 0 8px #000000, 0 0 15px rgba(0, 0, 0, 0.8) !important;
-            transform: scale(1) translateY(0);
-            filter: blur(0px);
-        }
 
-        /* Fragmentos físicos da essência de sombra sendo expelidos */
-        .shadow-strand {
-            position: fixed; pointer-events: none; z-index: 100; border-radius: 50%;
-            background: #000000 !important;
-            box-shadow: 0 0 6px #000, 0 0 12px #111 !important;
+        /* Canvas dedicado para a Serpente de Sombra */
+        #snake-canvas {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 15;
         }
-
-        #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
     </style>
 </head>
 <body>
 
-    <div class="essence-thread thread-tl"></div>
-    <div class="essence-thread thread-tr"></div>
-    <div class="essence-thread thread-bl"></div>
-    <div class="essence-thread thread-br"></div>
-
-    <div class="ambient-shadow shadow-1"></div>
-    <div class="ambient-shadow shadow-2"></div>
-    <canvas id="ambient-canvas"></canvas>
-
-    <div class="content-wrapper">
-        <nav class="nav-menu" style="display: flex; gap: 20px; margin-bottom: 30px; justify-content: flex-start;">
-            <a href="../index.html" class="nav-link" style="color: #333; text-decoration: none; font-family: monospace;">[ Início ]</a>
-            <a href="../personagens.html" class="nav-link" style="color: #333; text-decoration: none; font-family: monospace;">[ Personagens ]</a>
-            <a href="#" class="nav-link" style="color: #666; text-decoration: none; font-family: monospace; text-shadow: 0 0 5px #000;">[ Sunny ]</a>
+    <div class="content-wrapper" style="max-width: 750px; margin: 0 auto; padding: 5vh 20px;">
+        <nav class="nav-menu" style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <a href="../index.html" style="color: #4f5b73; text-decoration: none; font-family: monospace;">[ Início ]</a>
+            <a href="../personagens.html" style="color: #4f5b73; text-decoration: none; font-family: monospace;">[ Personagens ]</a>
         </nav>
 
-        <h1 style="color: #111; font-family: serif; letter-spacing: 5px; margin-bottom: 20px; text-shadow: 0 0 15px #000; text-align: center;">REGISTRO DE ALMA</h1>
+        <div class="mass-translate-container">
+            <button class="mass-translate-btn" id="mass-btn">
+                <img src="../imagens/translate-icon.png" alt="👁️" class="mass-translate-icon">
+                Tradução Cósmica em Massa
+            </button>
+        </div>
 
         <div class="character-container">
+            <canvas id="snake-canvas"></canvas>
             <img src="../imagens/Sunny.jpg" alt="Sunless" class="character-img">
             
             <div class="sunny-rune-text" id="sunny-soul-core">
@@ -182,44 +121,7 @@
     </div>
 
     <script>
-        // --- 1. POEIRA DE PNEUMA E NÉVOA AMBIENTE (Preto e Cinza) ---
-        const canvas = document.getElementById('ambient-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resizeCanvas); resizeCanvas();
-
-        class ShadowParticle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3 + 1;
-                this.speedX = Math.random() * 0.4 - 0.2;
-                this.speedY = Math.random() * -0.4 - 0.1;
-                this.color = Math.random() > 0.6 ? '#000000' : '#1c1c1c';
-                this.alpha = Math.random() * 0.6 + 0.2;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
-            }
-            draw() {
-                ctx.globalAlpha = this.alpha;
-                ctx.shadowBlur = 4; ctx.shadowColor = '#000';
-                ctx.fillStyle = this.color;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-            }
-        }
-        for (let i = 0; i < 40; i++) { particles.push(new ShadowParticle()); }
-        function animateAmbient() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animateAmbient);
-        }
-        animateAmbient();
-
-        // --- 2. SISTEMA REBELDE DE TRADUÇÃO DAS SOMBRAS ---
-        const runes = ['ᚦ', 'ᚧ', 'ᚨ', 'ᛒ', 'ᛃ', 'ᛄ', 'ᛅ', 'ᛆ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛋ', 'ᛏ', 'ᛐ', 'ᛑ', 'ᛒ', 'ᛓ'];
+        const runes = ['ᚦ', 'ᚧ', 'ᚨ', 'ᛒ', 'ᛃ', 'ᛄ', 'ᛅ', 'ᛆ', 'ᛇ'];
         const container = document.getElementById('sunny-soul-core');
         const paragraphs = container.querySelectorAll('p');
 
@@ -229,76 +131,66 @@
                 const span = document.createElement('span'); 
                 span.classList.add('sunny-letter');
                 span.dataset.real = originalText[i];
-                // Inicia como caracter oculto, sem formato
                 span.textContent = originalText[i] === ' ' ? ' ' : runes[Math.floor(Math.random() * runes.length)];
                 p.appendChild(span);
             }
         });
 
-        // Libera fragmentos e fios de essência preta pura tridimensional
-        function spawnShadowStrands(x, y) {
-            for (let i = 0; i < 4; i++) {
-                const strand = document.createElement('div');
-                strand.classList.add('shadow-strand');
-                const size = Math.random() * 4 + 2;
-                strand.style.width = size + 'px'; strand.style.height = size + 'px';
-                strand.style.left = x + 'px'; strand.style.top = y + 'px';
-                
-                const speedX = (Math.random() - 0.5) * 5;
-                const speedY = (Math.random() - 0.5) * 5;
-                let cX = x, cY = y, op = 1;
-                document.body.appendChild(strand);
+        // --- ANIMAÇÃO CINEMATOGRÁFICA DA SERPENTE DE SOMBRA ---
+        const sCanvas = document.getElementById('snake-canvas');
+        const sCtx = sCanvas.getContext('2d');
+        
+        function resizeSnakeCanvas() {
+            sCanvas.width = sCanvas.parentElement.offsetWidth;
+            sCanvas.height = sCanvas.parentElement.offsetHeight;
+        }
+        window.addEventListener('resize', resizeSnakeCanvas); resizeSnakeCanvas();
 
-                const move = setInterval(() => {
-                    cX += speedX; cY += speedY; op -= 0.05;
-                    strand.style.left = cX + 'px'; strand.style.top = cY + 'px'; strand.style.opacity = op;
-                    if (op <= 0) { clearInterval(move); strand.remove(); }
-                }, 25);
+        document.getElementById('mass-btn').addEventListener('click', () => {
+            resizeSnakeCanvas();
+            let snakeX = -50;
+            const snakeY = sCanvas.height / 2;
+            const letters = container.querySelectorAll('.sunny-letter');
+
+            function drawSnake() {
+                sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+                
+                // Desenha corpo da serpente flutuante/escura
+                sCtx.fillStyle = "rgba(5, 6, 8, 0.95)";
+                sCtx.shadowBlur = 20;
+                sCtx.shadowColor = "#000";
+                
+                sCtx.beginPath();
+                for (let i = 0; i < 120; i++) {
+                    const x = snakeX - i * 2;
+                    const y = snakeY + Math.sin(x * 0.05) * 40; // Movimento ondulado de serpente
+                    const size = Math.max(0, 35 - i * 0.25); // Afunilamento do rabo
+                    if(x > -50) sCtx.arc(x, y, size, 0, Math.PI * 2);
+                }
+                sCtx.fill();
+
+                // Verifica colisão da cabeça da serpente com as letras para esmagá-las e traduzi-as
+                letters.forEach(l => {
+                    if (l.textContent === ' ' || l.classList.contains('revealed')) return;
+                    const rect = l.getBoundingClientRect();
+                    const containerRect = sCanvas.getBoundingClientRect();
+                    const lX = rect.left - containerRect.left;
+                    
+                    if (snakeX > lX) {
+                        l.textContent = l.dataset.real;
+                        l.classList.add('revealed');
+                    }
+                });
+
+                snakeX += 12; // Velocidade do ataque da serpente
+                if (snakeX < sCanvas.width + 300) {
+                    requestAnimationFrame(drawSnake);
+                } else {
+                    sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height); // Desaparece nas sombras
+                }
             }
-        }
-
-        // MOTOR DE EVOLUÇÃO DAS SOMBRAS (Narrativa visual contínua)
-        function evolveShadowToText(letter) {
-            if (letter.textContent === ' ' || letter.classList.contains('revealed') || letter.classList.contains('spell-attempt') || letter.classList.contains('weaving-essence')) return;
-
-            // Passo 1: Transforma a sombra sem forma nas runas do Feitiço do Pesadelo
-            letter.classList.add('spell-attempt');
-            
-            // Passo 2: Quase instantaneamente, Sunny rejeita o feitiço e tece com essência negra
-            setTimeout(() => {
-                letter.classList.remove('spell-attempt');
-                letter.classList.add('weaving-essence');
-                
-                const rect = letter.getBoundingClientRect();
-                spawnShadowStrands(rect.left + (rect.width/2) + window.scrollX, rect.top + (rect.height/2) + window.scrollY);
-
-                // Passo 3: Fixa o texto final na cor de cinza sombrio estável
-                setTimeout(() => {
-                    letter.classList.remove('weaving-essence');
-                    letter.textContent = letter.dataset.real;
-                    letter.classList.add('revealed');
-                }, 300); // Tempo moldando a própria essência
-
-            }, 150); // Tempo que ele leva para rejeitar o design padrão
-        }
-
-        function triggerFullCascade() {
-            container.querySelectorAll('.sunny-letter').forEach((l, idx) => { 
-                setTimeout(() => evolveShadowToText(l), idx * 35); 
-            });
-        }
-
-        // --- INTEGRAÇÃO TOTAL DESKTOP & CONTROLE TÁTIL ---
-        container.querySelectorAll('.sunny-letter').forEach(l => { 
-            l.addEventListener('mouseenter', () => evolveShadowToText(l)); 
+            drawSnake();
         });
-        container.addEventListener('click', triggerFullCascade);
-        container.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const el = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (el && el.classList.contains('sunny-letter')) { evolveShadowToText(el); }
-        }, { passive: false });
     </script>
 </body>
 </html>
