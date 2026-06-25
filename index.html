@@ -10,106 +10,214 @@
             color: #d1d5db;
             font-family: serif;
             margin: 0;
-            padding: 5vh 20px;
+            padding: 5vh 20px 80px 20px;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            letter-spacing: 3px;
-            text-shadow: 0 0 15px rgba(255,255,255,0.2);
-            text-align: center;
-            margin-bottom: 20px;
+        /* --- MENU DE NAVEGAÇÃO SUPERIOR --- */
+        .nav-menu {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 40px;
+            font-family: monospace;
+            z-index: 100;
+        }
+        .nav-link {
+            color: #4f5b73;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
         }
 
-        .global-translate-btn {
-            background: #11141a;
-            border: 1px solid #2d333f;
-            padding: 12px 25px;
-            border-radius: 4px;
-            color: #8a95a5;
-            font-family: monospace;
-            font-size: 16px;
-            cursor: pointer;
+        /* --- INTRODUÇÃO DO USUÁRIO --- */
+        .intro-container {
+            max-width: 650px;
+            text-align: center;
             margin-bottom: 40px;
+            padding: 0 10px;
+            z-index: 10;
+        }
+        .intro-title {
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.15);
+            margin-bottom: 15px;
+        }
+        .intro-text {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            color: #8a95a5;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* --- BOTÃO SUPREMO DE TRADUÇÃO --- */
+        .global-translate-btn {
+            background: #0b0d12;
+            border: 1px solid #1f242e;
+            padding: 10px 22px;
+            border-radius: 4px;
+            color: #5c6982;
+            font-family: monospace;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 50px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             z-index: 50;
-            position: relative;
         }
         .global-translate-btn:hover {
-            border-color: #cbd5e1;
+            border-color: #8a95a5;
             color: #fff;
-            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            text-shadow: 0 0 5px #fff;
         }
 
+        /* --- GRID E CARDS DE PERSONAGENS --- */
         .character-grid {
             display: flex;
-            gap: 30px;
+            gap: 35px;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 1000px;
+            max-width: 1050px;
             width: 100%;
             position: relative;
             z-index: 10;
         }
 
         .char-card {
-            background: #0f1115;
-            border: 1px solid #1f242e;
-            border-radius: 6px;
-            padding: 20px;
-            width: 220px;
+            background: #0a0c10;
+            border: 1px solid #141923;
+            border-radius: 4px;
+            padding: 22px;
+            width: 230px;
             text-align: center;
             text-decoration: none;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: none; /* Esconde o mouse original dentro do card */
         }
         .char-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border-color: #3a4354;
+            transform: translateY(-8px);
         }
 
+        /* --- EFEITOS INDIVIDUAIS DE BORDA (HOVER) --- */
+        
+        /* Sunny: Tentáculos de Sombra */
+        .char-card[data-type="sunny"]:hover {
+            border-color: #0d0d11;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.95), 
+                        0 0 20px rgba(0, 0, 0, 0.8),
+                        inset 0 0 15px rgba(10, 10, 15, 0.6);
+            animation: shadowPulse 3s infinite ease-in-out;
+        }
+        @keyframes shadowPulse {
+            0%, 100% { box-shadow: 0 10px 35px rgba(0,0,0,0.95), 0 0 15px rgba(0,0,0,0.8); }
+            50% { box-shadow: 0 10px 35px rgba(0,0,0,1), 0 0 30px rgba(15, 15, 25, 0.9); }
+        }
+
+        /* Nephis: Fogo Branco Puro */
+        .char-card[data-type="nephis"]:hover {
+            border-color: #e5e7eb;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.25),
+                        inset 0 0 10px rgba(255, 255, 255, 0.1);
+            animation: fireGlow 1.5s infinite alternate ease-in-out;
+        }
+        @keyframes fireGlow {
+            0% { box-shadow: 0 0 20px rgba(255,255,255,0.15), inset 0 0 5px rgba(255,255,255,0.05); }
+            100% { box-shadow: 0 0 35px rgba(255,255,255,0.35), inset 0 0 15px rgba(255,255,255,0.15); }
+        }
+
+        /* Cassie: Névoa Azul Cintilante */
+        .char-card[data-type="cassie"]:hover {
+            border-color: #0077cc;
+            box-shadow: 0 0 25px rgba(0, 170, 255, 0.25),
+                        inset 0 0 12px rgba(0, 119, 204, 0.15);
+            animation: nebulaMist 2.5s infinite alternate ease-in-out;
+        }
+        @keyframes nebulaMist {
+            0% { box-shadow: 0 0 15px rgba(0,170,255,0.15), rgba(0, 50, 100, 0.3); }
+            100% { box-shadow: 0 0 35px rgba(0,170,255,0.4), rgba(0, 50, 100, 0.5); }
+        }
+
+        /* --- ELEMENTOS DO CARD --- */
         .char-img {
             width: 100%;
-            height: 280px;
+            height: 290px;
             object-fit: cover;
-            border-radius: 4px;
-            filter: grayscale(40%) brightness(70%);
-            margin-bottom: 15px;
-            transition: all 0.3s;
+            border-radius: 2px;
+            filter: grayscale(60%) brightness(55%);
+            margin-bottom: 18px;
+            transition: all 0.4s ease;
+            border: 1px solid #11141a;
         }
         .char-card:hover .char-img {
-            filter: grayscale(0%) brightness(100%);
+            filter: grayscale(10%) brightness(90%);
+            border-color: #222936;
         }
 
+        /* --- TRADUÇÃO RÚNICA NEUTRA (PRATA) --- */
         .char-name {
-            font-size: 22px;
-            margin: 0;
-            color: #4f5b73;
+            font-size: 20px;
+            margin: 0 0 10px 0;
+            color: #3b4556;
             letter-spacing: 2px;
+            font-family: monospace;
         }
         .rune-letter {
             display: inline-block;
-            transition: all 0.3s;
+            transition: all 0.4s;
         }
         .rune-letter.revealed {
-            color: #fff;
-            text-shadow: 0 0 8px rgba(255,255,255,0.6);
+            color: #e5e7eb;
+            text-shadow: 0 0 8px rgba(255,255,255,0.4);
+            font-family: serif;
         }
 
+        /* --- BREVE SINOPSE --- */
+        .char-synopsis {
+            font-size: 13px;
+            color: #525f7a;
+            font-family: serif;
+            font-style: italic;
+            margin: 0;
+            line-height: 1.4;
+            opacity: 0.5;
+            transition: opacity 0.4s ease, color 0.4s ease;
+        }
+        .char-card:hover .char-synopsis {
+            opacity: 0.9;
+            color: #9ca3af;
+        }
+
+        /* --- CURSOR CUSTOMIZADO DINÂMICO --- */
+        #custom-cursor {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: transparent;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.3s, box-shadow 0.3s;
+        }
+
+        /* --- ONDA MAGNÉTICA DA TRADUÇÃO EM MASSA --- */
         .magic-wave {
             position: fixed;
-            top: -20vh;
-            left: 0;
-            width: 100vw;
-            height: 10vh;
-            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent);
-            box-shadow: 0 0 40px rgba(255,255,255,0.1);
+            top: -20vh; left: 0;
+            width: 100vw; height: 12vh;
+            background: linear-gradient(to bottom, transparent, rgba(230,235,255,0.25), transparent);
+            box-shadow: 0 0 35px rgba(255,255,255,0.08);
             pointer-events: none;
             z-index: 100;
             opacity: 0;
@@ -122,7 +230,19 @@
 </head>
 <body>
 
-    <h1>ARQUIVOS DO FEITIÇO</h1>
+    <div id="custom-cursor"></div>
+
+    <nav class="nav-menu">
+        <a href="#" class="nav-link active">[ Início ]</a>
+        <a href="curiosidades.html" class="nav-link">[ Curiosidades ]</a>
+    </nav>
+
+    <div class="intro-container">
+        <h1 class="intro-title">ARQUIVOS DO FEITIÇO</h1>
+        <p class="intro-text">
+            "Insira o seu texto de introdução aqui, Desperto. Esta área está reservada para as suas palavras, preparando o cenário antes que os segredos da alma sejam rompidos."
+        </p>
+    </div>
 
     <button class="global-translate-btn" id="mass-btn">
         Desvendar Todos os Registros
@@ -130,26 +250,32 @@
 
     <div class="magic-wave" id="wave"></div>
 
-    <div class="character-grid">
-        <a href="personagens/sunny.html" class="char-card">
+    <div class="character-grid" id="grid">
+        
+        <a href="personagens/sunny.html" class="char-card" data-type="sunny">
             <img src="img/sunless.jpg" alt="Sunny" class="char-img">
             <h2 class="char-name" data-name="SUNLESS"></h2>
+            <p class="char-synopsis">Aquele que caminha entre as sombras, ocultando a verdade sob uma máscara de cinismo.</p>
         </a>
 
-        <a href="personagens/nephis.html" class="char-card">
+        <a href="personagens/nephis.html" class="char-card" data-type="nephis">
             <img src="img/nephis.jpg" alt="Nephis" class="char-img">
             <h2 class="char-name" data-name="NEPHIS"></h2>
+            <p class="char-synopsis">A Estrela da Mudança, portadora de uma chama branca pura tão curativa quanto destrutiva.</p>
         </a>
 
-        <a href="personagens/cassie.html" class="char-card">
+        <a href="personagens/cassie.html" class="char-card" data-type="cassie">
             <img src="img/cassia.jpg" alt="Cassie" class="char-img">
             <h2 class="char-name" data-name="CASSIE"></h2>
+            <p class="char-synopsis">A vidente cega fadada a enxergar as tramas invisíveis que tecem o amargo destino.</p>
         </a>
     </div>
 
     <script>
         const runes = ['ᚦ', 'ᚧ', 'ᚨ', 'ᛒ', 'ᛃ', 'ᛄ', 'ᛅ', 'ᛆ', 'ᛇ'];
+        const cursor = document.getElementById('custom-cursor');
         
+        // --- 1. GERAÇÃO DAS RUNAS INICIAIS ---
         document.querySelectorAll('.char-name').forEach(el => {
             const realName = el.getAttribute('data-name');
             for (let i = 0; i < realName.length; i++) {
@@ -161,6 +287,7 @@
             }
         });
 
+        // --- 2. REVELAÇÃO INDIVIDUAL AO PASSAR O MOUSE ---
         document.querySelectorAll('.char-card').forEach(card => {
             card.addEventListener('mouseenter', () => {
                 card.querySelectorAll('.rune-letter').forEach((l, idx) => {
@@ -169,11 +296,12 @@
                             l.textContent = l.dataset.real;
                             l.classList.add('revealed');
                         }
-                    }, idx * 50);
+                    }, idx * 60);
                 });
             });
         });
 
+        // --- 3. TRADUÇÃO EM MASSA NEUTRA ---
         document.getElementById('mass-btn').addEventListener('click', () => {
             const wave = document.getElementById('wave');
             wave.style.animation = 'waveSweep 1.5s ease-in-out forwards';
@@ -183,9 +311,43 @@
                     l.textContent = l.dataset.real;
                     l.classList.add('revealed');
                 });
-            }, 600);
+            }, 500);
 
             setTimeout(() => { wave.style.animation = 'none'; }, 1600);
+        });
+
+        // --- 4. ENGINE DO CURSOR ELEMENTAL DINÂMICO ---
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        document.querySelectorAll('.char-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const type = card.getAttribute('data-type');
+                cursor.style.width = '20px';
+                cursor.style.height = '20px';
+                
+                // Configura o elemento visual do cursor baseado no tipo do card
+                if (type === 'sunny') {
+                    cursor.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+                    cursor.style.boxShadow = '0 0 15px #000000, 0 0 30px rgba(10,10,20,0.5)';
+                } else if (type === 'nephis') {
+                    cursor.style.backgroundColor = '#ffffff';
+                    cursor.style.boxShadow = '0 0 15px #ffffff, 0 0 25px rgba(255,255,255,0.6)';
+                } else if (type === 'cassie') {
+                    cursor.style.backgroundColor = '#00aaff';
+                    cursor.style.boxShadow = '0 0 15px #00aaff, 0 0 25px rgba(0,170,255,0.6)';
+                }
+            });
+
+            card.addEventListener('mouseleave', () => {
+                // Reseta o cursor para o estado neutro oculto fora do card
+                cursor.style.width = '10px';
+                cursor.style.height = '10px';
+                cursor.style.backgroundColor = 'transparent';
+                cursor.style.boxShadow = 'none';
+            });
         });
     </script>
 </body>
