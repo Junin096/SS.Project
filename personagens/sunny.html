@@ -6,73 +6,116 @@
     <title>Registro de Alma - Lorde das Sombras</title>
     <style>
         body { 
-            background-color: #0d0f12 !important; 
+            background-color: #050608 !important; 
             overflow-x: hidden;
             position: relative;
             margin: 0; padding: 0;
+            min-height: 100vh;
         }
 
-        .mass-translate-container { display: flex; justify-content: center; margin-bottom: 25px; margin-top: 20px; }
+        /* --- FUNDO: EXÉRCITO DE SOMBRAS --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-image: url('../img/shadow_army.jpg'); 
+            background-size: cover;
+            background-position: center bottom;
+            opacity: 0.15; /* Sutil para não ofuscar o texto */
+            filter: grayscale(100%) contrast(120%); 
+            z-index: 0;
+            pointer-events: none;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, #050608 5%, transparent 40%, transparent 70%, #050608 95%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- BOTÃO DE INVOCAÇÃO --- */
+        .mass-translate-container { display: flex; justify-content: center; margin-bottom: 25px; margin-top: 20px; z-index: 30; position: relative; }
         .mass-translate-btn {
-            background: #181b22; border: 1px solid #2d333f; padding: 10px 20px; border-radius: 4px;
-            color: #8a95a5; font-family: monospace; cursor: pointer; display: flex; align-items: center; gap: 10px;
-            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 30; position: relative;
+            background: #0a0c10; border: 1px solid #1f242e; padding: 10px 20px; border-radius: 4px;
+            color: #5c6982; font-family: monospace; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
         }
-        .mass-translate-btn:hover { border-color: #4f5b73; color: #ffffff; }
-        .mass-translate-icon { width: 18px; height: 18px; object-fit: contain; }
+        .mass-translate-btn:hover { border-color: #8a95a5; color: #ffffff; text-shadow: 0 0 5px #fff; }
 
-        .essence-thread { position: fixed; width: 200px; height: 200px; pointer-events: none; z-index: 20; opacity: 0.5; animation: threadPulse 5s infinite ease-in-out; }
+        /* --- ELEMENTOS DE AMBIENTAÇÃO --- */
+        .essence-thread { position: fixed; width: 200px; height: 200px; pointer-events: none; z-index: 20; opacity: 0.3; animation: threadPulse 5s infinite ease-in-out; }
         .thread-tl { top: 0; left: 0; border-left: 2px solid #1c2026; border-top: 2px solid #1c2026; background: radial-gradient(circle at top left, rgba(24,27,34,0.8) 0%, transparent 70%); }
-        .thread-tr { top: 0; right: 0; border-right: 2px solid #1c2026; border-top: 2px solid #1c2026; background: radial-gradient(circle at top right, rgba(24,27,34,0.8) 0%, transparent 70%); }
-        .thread-bl { bottom: 0; left: 0; border-left: 2px solid #1c2026; border-bottom: 2px solid #1c2026; background: radial-gradient(circle at bottom left, rgba(24,27,34,0.8) 0%, transparent 70%); }
         .thread-br { bottom: 0; right: 0; border-right: 2px solid #1c2026; border-bottom: 2px solid #1c2026; background: radial-gradient(circle at bottom right, rgba(24,27,34,0.8) 0%, transparent 70%); }
-        @keyframes threadPulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.03); opacity: 0.7; } }
-
-        .ambient-shadow { position: fixed; border-radius: 50%; background: radial-gradient(circle, rgba(10,12,16,0.9) 0%, transparent 70%); filter: blur(40px); pointer-events: none; z-index: 1; }
-        .shadow-1 { width: 600px; height: 600px; top: -10%; left: -10%; animation: shadowBowLeft 15s infinite ease-in-out; }
-        .shadow-2 { width: 500px; height: 500px; bottom: -10%; right: -10%; animation: shadowBowRight 18s infinite ease-in-out; }
-        @keyframes shadowBowLeft { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(60px, 60px) scale(1.1); } }
-        @keyframes shadowBowRight { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-50px, -40px) scale(1.1); } }
+        @keyframes threadPulse { 0%, 100% { transform: scale(1); opacity: 0.2; } 50% { transform: scale(1.05); opacity: 0.5; } }
 
         .content-wrapper { position: relative; z-index: 10; max-width: 750px; width: 100%; margin: 0 auto; padding: 5vh 20px 40px 20px; box-sizing: border-box; }
-        .character-container { display: flex; gap: 25px; background: #13161c; border: 1px solid #222730; padding: 25px; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); align-items: center; position: relative; }
+        
+        /* --- CAIXA PRINCIPAL DO PERSONAGEM --- */
+        .character-container { 
+            display: flex; gap: 25px; background: #0b0d12; border: 1px solid #141923; padding: 25px; 
+            border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); align-items: center; position: relative; 
+            transition: opacity 0.2s, transform 0.2s;
+        }
         @media (max-width: 600px) { .character-container { flex-direction: column; text-align: center; } }
         
-        .character-img { width: 180px; height: 240px; object-fit: cover; border: 1px solid #2d333f; border-radius: 2px; filter: grayscale(30%) brightness(80%); }
+        .character-img { width: 180px; height: 240px; object-fit: cover; border: 1px solid #1f242e; border-radius: 2px; filter: grayscale(50%) brightness(70%); }
 
-        .sunny-rune-text p { margin: 12px 0; font-family: monospace; font-size: 16px; min-height: 20px; color: #8a95a5; }
-        .sunny-letter { display: inline-block; font-family: serif; color: #3a4354; text-shadow: 0 0 2px #000; transition: all 0.2s; }
-        .sunny-letter.spell-attempt { color: #111 !important; transform: scale(0.9); }
-        .sunny-letter.weaving-essence { color: #000 !important; text-shadow: 0 0 8px #000 !important; transform: scale(1.2); }
-        .sunny-letter.revealed { color: #cbd5e1 !important; text-shadow: none !important; transform: scale(1); }
+        /* --- EFEITO: TREMOR E DESTRUIÇÃO --- */
+        .shake-violent { animation: shake 0.1s infinite; border-color: #333 !important; box-shadow: 0 0 30px #000 !important; }
+        @keyframes shake {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            25% { transform: translate(-3px, -2px) rotate(-1deg); }
+            50% { transform: translate(3px, 3px) rotate(1deg); }
+            75% { transform: translate(-2px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shatter { opacity: 0 !important; transform: scale(0.8) !important; pointer-events: none; }
 
-        .shadow-strand { position: fixed; pointer-events: none; z-index: 100; border-radius: 50%; background: #000; box-shadow: 0 0 4px #000; }
-        #snake-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; }
+        /* --- ESCURIDÃO ABSOLUTA --- */
+        .absolute-darkness {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000000; z-index: 200; opacity: 0; pointer-events: none;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        /* --- TEXTOS E RUNAS --- */
+        .sunny-rune-text p { margin: 12px 0; font-family: monospace; font-size: 16px; min-height: 20px; color: #5c6982; }
+        .sunny-letter { display: inline-block; font-family: serif; color: #3b4556; transition: all 0.2s; }
+        .sunny-letter.spell-attempt { color: #000 !important; transform: scale(0.8); }
+        .sunny-letter.weaving-essence { color: #000 !important; text-shadow: 0 0 10px #000 !important; transform: scale(1.3); }
+        .sunny-letter.revealed { color: #e5e7eb !important; text-shadow: 0 0 8px rgba(255,255,255,0.3) !important; transform: scale(1); }
+
+        .shadow-strand { position: fixed; pointer-events: none; z-index: 100; border-radius: 50%; background: #000; box-shadow: 0 0 5px #000; }
+        
+        /* Canvas para as partículas ambientes e tentáculos */
         #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
+        #tentacle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 150; }
 
         .back-btn-container { display: flex; justify-content: center; margin-top: 40px; z-index: 20; position: relative; }
-        .back-btn { background: transparent; border: 1px solid #4f5b73; padding: 10px 30px; border-radius: 4px; color: #8a95a5; font-family: monospace; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
-        .back-btn:hover { background: #11141a; border-color: #cbd5e1; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+        .back-btn { background: transparent; border: 1px solid #1f242e; padding: 10px 30px; border-radius: 4px; color: #5c6982; font-family: monospace; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
+        .back-btn:hover { background: #0a0c10; border-color: #8a95a5; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
-    <div class="essence-thread thread-tl"></div><div class="essence-thread thread-tr"></div>
-    <div class="essence-thread thread-bl"></div><div class="essence-thread thread-br"></div>
-    <div class="ambient-shadow shadow-1"></div><div class="ambient-shadow shadow-2"></div>
-    <canvas id="ambient-canvas"></canvas>
+    <div class="absolute-darkness" id="void"></div>
 
-    <div class="content-wrapper">
+    <div class="essence-thread thread-tl"></div>
+    <div class="essence-thread thread-br"></div>
+    <canvas id="ambient-canvas"></canvas>
+    <canvas id="tentacle-canvas"></canvas> <div class="content-wrapper">
         <div class="mass-translate-container">
             <button class="mass-translate-btn" id="mass-btn">
-                <img src="../img/sunnychibi.jpg" alt="👁️" class="mass-translate-icon">
-                Invocar Serpente de Sombra
+                Manifestar Tentáculos de Sombra
             </button>
         </div>
 
-        <div class="character-container">
-            <canvas id="snake-canvas"></canvas>
-            <img src="../img/lossunny.jpg"Sunless" class="character-img">
+        <div class="character-container" id="char-box">
+            <img src="../img/lossunny.jpg" alt="Sunless" class="character-img">
             
             <div class="sunny-rune-text" id="sunny-soul-core">
                 <p>Nome Verdadeiro: Perdido da Luz</p>
@@ -89,13 +132,15 @@
     </div>
 
     <script>
+        // --- 1. PARTICULAS AMBIENTES (FUNDO) ---
         const canvas = document.getElementById('ambient-canvas'); const ctx = canvas.getContext('2d');
         let particles = []; function resCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resCanvas); resCanvas();
-        class P { constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.size = Math.random()*2; this.speedY = -0.3; } update() { this.y += this.speedY; if(this.y<0) this.y=canvas.height; } draw() { ctx.fillStyle = "rgba(20,24,33,0.5)"; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); } }
-        for(let i=0;i<30;i++) particles.push(new P());
+        class P { constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.size = Math.random()*2; this.speedY = -0.2; } update() { this.y += this.speedY; if(this.y<0) this.y=canvas.height; } draw() { ctx.fillStyle = "rgba(15,18,25,0.4)"; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); } }
+        for(let i=0;i<40;i++) particles.push(new P());
         function anim() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(anim); } anim();
 
+        // --- 2. SISTEMA RÚNICO (INDIVIDUAL) ---
         const runes = ['ᚦ', 'ᚧ', 'ᚨ', 'ᛒ', 'ᛃ', 'ᛄ', 'ᛅ', 'ᛆ', 'ᛇ'];
         const container = document.getElementById('sunny-soul-core');
         container.querySelectorAll('p').forEach(p => {
@@ -112,7 +157,7 @@
                 const s = document.createElement('div'); s.classList.add('shadow-strand');
                 s.style.width='3px'; s.style.height='3px'; s.style.left=x+'px'; s.style.top=y+'px';
                 let cX=x, cY=y, op=1; document.body.appendChild(s);
-                const m = setInterval(()=>{ cX+=(Math.random()-0.5)*4; cY+=(Math.random()-0.5)*4; op-=0.1; s.style.left=cX+'px'; s.style.top=cY+'px'; s.style.opacity=op; if(op<=0){clearInterval(m);s.remove();} },30);
+                const m = setInterval(()=>{ cX+=(Math.random()-0.5)*5; cY+=(Math.random()-0.5)*5; op-=0.1; s.style.left=cX+'px'; s.style.top=cY+'px'; s.style.opacity=op; if(op<=0){clearInterval(m);s.remove();} },30);
             }
         }
         function evolveLetter(l) {
@@ -126,29 +171,110 @@
         }
         container.querySelectorAll('.sunny-letter').forEach(l => { l.addEventListener('mouseenter', () => evolveLetter(l)); });
 
-        const sCanvas = document.getElementById('snake-canvas'); const sCtx = sCanvas.getContext('2d');
-        function resSnake() { sCanvas.width = sCanvas.parentElement.offsetWidth; sCanvas.height = sCanvas.parentElement.offsetHeight; }
+        // --- 3. EVENTO SUPREMO: TENTÁCULOS DE SOMBRA E EXPLOSÃO ---
+        const tCanvas = document.getElementById('tentacle-canvas');
+        const tCtx = tCanvas.getContext('2d');
+        function resTentacle() { tCanvas.width = window.innerWidth; tCanvas.height = window.innerHeight; }
+        window.addEventListener('resize', resTentacle); resTentacle();
+
         document.getElementById('mass-btn').addEventListener('click', () => {
-            resSnake(); let snakeX = -60; const snakeY = sCanvas.height / 2;
-            const letters = container.querySelectorAll('.sunny-letter');
-            function drawSnake() {
-                sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
-                sCtx.fillStyle = "rgba(4, 5, 7, 0.98)"; sCtx.shadowBlur = 15; sCtx.shadowColor = "#000";
-                sCtx.beginPath();
-                for (let i = 0; i < 100; i++) {
-                    const x = snakeX - i * 2.5; const y = snakeY + Math.sin(x * 0.04) * 35;
-                    if(x > -50) sCtx.arc(x, y, Math.max(0, 30 - i*0.25), 0, Math.PI * 2);
-                }
-                sCtx.fill();
-                letters.forEach(l => {
-                    if (l.textContent === ' ' || l.classList.contains('revealed')) return;
-                    const lX = l.getBoundingClientRect().left - sCanvas.getBoundingClientRect().left;
-                    if (snakeX > lX) { l.textContent = l.dataset.real; l.classList.add('revealed'); }
+            const charBox = document.getElementById('char-box');
+            const voidDarkness = document.getElementById('void');
+            const boxRect = charBox.getBoundingClientRect();
+            const targetX = boxRect.left + boxRect.width / 2;
+            const targetY = boxRect.top + boxRect.height / 2;
+            
+            let tentacles = [];
+            let isShaking = false;
+            let particlesErupt = [];
+
+            // Cria 8 tentáculos vindo das bordas da tela
+            const starts = [
+                {x: 0, y: 0}, {x: tCanvas.width, y: 0}, {x: 0, y: tCanvas.height}, {x: tCanvas.width, y: tCanvas.height},
+                {x: tCanvas.width/2, y: 0}, {x: tCanvas.width/2, y: tCanvas.height}, {x: 0, y: tCanvas.height/2}, {x: tCanvas.width, y: tCanvas.height/2}
+            ];
+
+            starts.forEach(pos => {
+                tentacles.push({ x: pos.x, y: pos.y, hist: [], active: true, angle: Math.atan2(targetY - pos.y, targetX - pos.x), length: 0 });
+            });
+
+            function dramatics() {
+                tCtx.clearRect(0, 0, tCanvas.width, tCanvas.height);
+                let allReached = true;
+
+                // Desenha os tentáculos rastejando
+                tCtx.fillStyle = "rgba(5, 6, 8, 0.98)";
+                tCtx.shadowBlur = 20; tCtx.shadowColor = "#000";
+
+                tentacles.forEach(t => {
+                    if (t.active) {
+                        let dist = Math.hypot(targetX - t.x, targetY - t.y);
+                        if (dist > 50) {
+                            allReached = false;
+                            t.x += Math.cos(t.angle) * 6 + Math.sin(t.length * 0.2) * 4;
+                            t.y += Math.sin(t.angle) * 6 + Math.cos(t.length * 0.2) * 4;
+                            t.angle = Math.atan2(targetY - t.y, targetX - t.x);
+                            t.hist.push({x: t.x, y: t.y, r: Math.max(5, 40 - (t.length * 0.2))});
+                            t.length++;
+                        } else { t.active = false; }
+                    }
+                    t.hist.forEach(p => { tCtx.beginPath(); tCtx.arc(p.x, p.y, p.r, 0, Math.PI*2); tCtx.fill(); });
                 });
-                snakeX += 14;
-                if (snakeX < sCanvas.width + 250) requestAnimationFrame(drawSnake);
-                else sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
-            } drawSnake();
+
+                // Fase 2: Esmagar (Tremor)
+                if (allReached && !isShaking) {
+                    isShaking = true;
+                    charBox.classList.add('shake-violent'); // A caixa começa a tremer violentamente
+                    
+                    setTimeout(() => {
+                        // Fase 3: Explosão e Escuridão Absoluta
+                        charBox.classList.remove('shake-violent');
+                        charBox.classList.add('shatter'); // Caixa some
+                        
+                        // Cria partículas de explosão de sombra
+                        for(let i=0; i<80; i++) {
+                            particlesErupt.push({
+                                x: targetX, y: targetY, 
+                                vx: (Math.random()-0.5)*35, vy: (Math.random()-0.5)*35, 
+                                r: Math.random()*15 + 5, life: 1
+                            });
+                        }
+                        
+                        // Tela fica totalmente preta
+                        voidDarkness.style.opacity = '1';
+
+                        // Fase 4: Revelação no Escuro
+                        setTimeout(() => {
+                            container.querySelectorAll('.sunny-letter').forEach(l => {
+                                l.textContent = l.dataset.real;
+                                l.classList.add('revealed');
+                            });
+                            
+                            // Remove a classe shatter para a caixa voltar silenciosamente enquanto está escuro
+                            charBox.classList.remove('shatter');
+                            tCtx.clearRect(0, 0, tCanvas.width, tCanvas.height); // Limpa o canvas dos tentáculos
+                            
+                            // Fase 5: A luz volta
+                            setTimeout(() => { voidDarkness.style.opacity = '0'; }, 800);
+
+                        }, 1500); // Tempo na escuridão
+
+                    }, 2000); // Tempo sendo esmagado (2 segundos)
+                }
+
+                // Desenha a explosão se ela existir
+                if (particlesErupt.length > 0) {
+                    particlesErupt.forEach(p => {
+                        p.x += p.vx; p.y += p.vy; p.life -= 0.02; p.r *= 0.95;
+                        if(p.life > 0) { tCtx.beginPath(); tCtx.arc(p.x, p.y, p.r, 0, Math.PI*2); tCtx.fill(); }
+                    });
+                }
+
+                if (!allReached || particlesErupt.some(p => p.life > 0)) {
+                    requestAnimationFrame(dramatics);
+                }
+            }
+            dramatics();
         });
     </script>
 </body>
