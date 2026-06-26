@@ -9,7 +9,7 @@
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background: #050505; overflow: hidden; font-family: monospace;
-            color: #e0f7fa;
+            color: #e0f7fa; cursor: default;
         }
 
         /* --- TELA DE RENDERIZAÇÃO --- */
@@ -19,8 +19,10 @@
         .content-wrapper {
             position: relative; z-index: 20; max-width: 750px; width: 100%; height: 100%; margin: 0 auto;
             padding: 5vh 20px 40px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
-            justify-content: center;
+            justify-content: center; pointer-events: none; /* Deixa o rastro do mouse passar por cima em áreas vazias */
         }
+        
+        .mass-translate-container, .character-container, .back-btn-container { pointer-events: auto; }
 
         .mass-translate-container { position: absolute; top: 5vh; z-index: 30; }
         .mass-translate-btn {
@@ -48,23 +50,31 @@
         .sunny-letter { 
             display: inline-block; font-family: serif; color: #4a5463; 
             transition: color 0.3s, text-shadow 0.3s;
-            cursor: crosshair;
+        }
+
+        /* Efeito de Hover: Preto estático -> Branco brilhante e legível */
+        .hover-translate {
+            animation: hoverReveal 0.6s forwards;
+        }
+        @keyframes hoverReveal {
+            0% { color: #000000; text-shadow: 0 0 12px rgba(255,255,255,0.9); }
+            100% { color: #ffffff; text-shadow: 0 0 6px rgba(255,255,255,0.4); }
         }
 
         /* Animação de Estilhaçamento (Shatter) */
         .shatter-anim {
-            animation: shatterFade 0.9s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            animation: shatterFade 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
         }
         @keyframes shatterFade {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; filter: blur(0); color: #000; text-shadow: 0 0 15px #fff; }
-            40% { color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.8); }
+            30% { color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.8); }
             100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--tr)); opacity: 0; filter: blur(5px); color: transparent; text-shadow: none; }
         }
 
         /* O Estado Revelado Final (Branco Forte) */
         .sunny-letter.revealed {
             color: #ffffff !important; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.8);
-            animation: gentleFloat 4s infinite ease-in-out; cursor: default;
+            animation: gentleFloat 4s infinite ease-in-out;
         }
 
         @keyframes gentleFloat {
@@ -76,7 +86,7 @@
         .absolute-darkness {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000000; z-index: 200; opacity: 0; pointer-events: none;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 0.8s ease-in-out;
         }
         .scene-title { position: fixed; bottom: 15px; left: 20px; font-size: 1.2rem; letter-spacing: 0.2rem; color: rgba(255, 255, 255, 0.4); z-index: 5; }
 
@@ -119,7 +129,14 @@
         
         let ambTime = 0;
         let isTranslating = false; 
+        let whirlFactor = 0; // Controla a força do redemoinho (0 a 1)
         
+        // --- Rastro do Mouse ---
+        let mouseTrail = [];
+        window.addEventListener('mousemove', (e) => {
+            mouseTrail.push({ x: e.clientX, y: e.clientY, life: 1.0 });
+        });
+
         // 6 Pequenos sóis espalhados na parte superior
         const smallSuns = [];
         for (let i = 0; i < 6; i++) {
@@ -130,18 +147,17 @@
             });
         }
 
-        // Bolinhas brancas orbitando o 7º Sol (Tamanhos variados)
+        // Bolinhas brancas orbitando o 7º Sol
         const orbs = [];
         for(let i = 0; i < 15; i++) {
             orbs.push({
                 angle: (Math.PI * 2 / 15) * i,
                 speed: 0.01 + Math.random() * 0.01,
                 distanceOffset: Math.random() * 25 - 10,
-                size: Math.random() * 4.5 + 1.5 // Algumas maiores, outras menores
+                size: Math.random() * 4.5 + 1.5 
             });
         }
 
-        // Bolinhas/Bolhas subindo do fundo (Atrás do mar)
         let bubbles = [];
         function initBubbles() {
             bubbles = [];
@@ -166,10 +182,10 @@
             ambCtx.fillStyle = '#050505'; 
             ambCtx.fillRect(0, 0, ambCanvas.width, ambCanvas.height);
 
-            // 1. Bolhas subindo atrás do mar
+            // Bolhas
             ambCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
             bubbles.forEach(b => {
-                b.y -= b.speed + (isTranslating ? 2 : 0); // Sobem mais rápido traduzindo
+                b.y -= b.speed + (isTranslating ? 4 : 0); // Muito mais rápido
                 if(b.y < ambCanvas.height * 0.3) { 
                     b.y = ambCanvas.height + 50; 
                     b.x = Math.random() * ambCanvas.width; 
@@ -179,7 +195,7 @@
                 ambCtx.fill();
             });
 
-            // 2. Os 6 pequenos sóis no fundo
+            // Pequenos Sóis
             smallSuns.forEach(sun => {
                 ambCtx.beginPath();
                 ambCtx.arc(sun.x * ambCanvas.width, sun.y * ambCanvas.height, sun.size, 0, Math.PI * 2);
@@ -193,40 +209,61 @@
                 ambCtx.shadowBlur = 0;
             });
 
-            // 3. Oceano com Correntezas (Atrás do 7º Sol)
+            // Atualiza Fator do Redemoinho
+            whirlFactor += isTranslating ? 0.02 : -0.01;
+            whirlFactor = Math.max(0, Math.min(1, whirlFactor));
+
+            // Centro base da tela/sol
+            const boxRect = charBox.getBoundingClientRect();
+            const cx = boxRect.left + boxRect.width / 2;
+            const cy = boxRect.top + boxRect.height / 2;
+
+            // Oceano com Correntezas e Redemoinho
             let seaLevel = ambCanvas.height * 0.82;
             for(let i = 0; i < 4; i++) {
                 ambCtx.beginPath();
                 ambCtx.moveTo(0, ambCanvas.height);
                 ambCtx.lineTo(0, seaLevel + i * 12);
                 
-                // Ondas senoidais combinadas para parecer correnteza real
                 for(let x = 0; x <= ambCanvas.width; x += 30) {
-                    let waveSpeed = ambTime * (1 + i * 0.15);
-                    let y = seaLevel + i * 12 + Math.sin(x * 0.01 + waveSpeed) * (5 + i * 2) + Math.cos(x * 0.005 - waveSpeed * 0.5) * 3;
+                    let dx = x - cx;
+                    let dist = Math.abs(dx);
+                    
+                    // Lógica do Redemoinho: puxa a água pra baixo perto do centro quando whirlFactor > 0
+                    let whirlPull = Math.max(0, 300 - dist) / 300; 
+                    let pullDown = whirlPull * 200 * whirlFactor; 
+
+                    let waveSpeed = ambTime * (1 + i * 0.15) * (1 + whirlFactor * 8); // Água muito agressiva
+                    let baseHeight = seaLevel + i * 12;
+
+                    // O x também "entorta" levemente simulando o redemoinho puxando pro centro
+                    let swirlOffset = (dx > 0 ? -1 : 1) * whirlPull * 50 * whirlFactor;
+                    
+                    let y = baseHeight + pullDown + Math.sin((x + swirlOffset) * 0.01 + waveSpeed) * (5 + i * 2) * (1 + whirlFactor * 3) + Math.cos(x * 0.005 - waveSpeed * 0.5) * 3;
                     ambCtx.lineTo(x, y);
                 }
                 ambCtx.lineTo(ambCanvas.width, ambCanvas.height);
                 
                 ambCtx.fillStyle = `rgba(5, 5, 5, 0.9)`; 
                 ambCtx.fill();
-                ambCtx.strokeStyle = `rgba(50, 50, 50, ${0.4 + i * 0.1})`; // Contorno cinza da água
+                ambCtx.strokeStyle = `rgba(50, 50, 50, ${0.4 + i * 0.1})`; 
                 ambCtx.lineWidth = 1.5;
                 ambCtx.stroke();
             }
 
-            // 4. O 7º Sol Grande (Desenhado por último, sobrepondo o mar se encostar)
-            const boxRect = charBox.getBoundingClientRect();
-            const cx = boxRect.left + boxRect.width / 2;
-            const cy = boxRect.top + boxRect.height / 2;
+            // O 7º Sol Grande
             const baseRadius = Math.max(boxRect.width, boxRect.height) / 1.5;
 
-            // A) Chamas Brancas Ondulantes do 7º Sol
+            // Chamas Brancas Ondulantes do 7º Sol (Tamanhos Variados)
             ambCtx.beginPath();
             for(let a = 0; a <= Math.PI * 2.1; a += 0.05) {
-                let waveIntensity = isTranslating ? 45 : 12;
-                let speedMultiplier = isTranslating ? 25 : 4;
-                let wave = Math.sin(a * 14 + ambTime * speedMultiplier) * waveIntensity;
+                let waveIntensity = isTranslating ? 60 : 12;
+                let speedMultiplier = isTranslating ? 40 : 4; // Rotação bem mais rápida
+                
+                // Combinação de duas ondas (uma maior, uma menor) para chamas irregulares
+                let wave1 = Math.sin(a * 14 + ambTime * speedMultiplier) * waveIntensity;
+                let wave2 = Math.cos(a * 7 - ambTime * (speedMultiplier * 0.8)) * (waveIntensity * 0.6);
+                let wave = wave1 + wave2;
                 
                 let r = baseRadius + wave;
                 let x = cx + Math.cos(a) * r;
@@ -238,20 +275,20 @@
             ambCtx.closePath();
             ambCtx.fillStyle = '#ffffff'; 
             ambCtx.shadowColor = '#ffffff';
-            ambCtx.shadowBlur = isTranslating ? 80 : 25; 
+            ambCtx.shadowBlur = isTranslating ? 100 : 25; 
             ambCtx.fill();
             ambCtx.shadowBlur = 0; 
 
-            // B) Núcleo Negro Perfeito (Permanece intacto e circular)
+            // Núcleo Negro Perfeito
             ambCtx.beginPath();
-            ambCtx.arc(cx, cy, baseRadius - 2, 0, Math.PI * 2); // Levemente menor para não cobrir a base das chamas
+            ambCtx.arc(cx, cy, baseRadius - 2, 0, Math.PI * 2); 
             ambCtx.fillStyle = '#000000';
             ambCtx.fill();
 
-            // C) Orbes Perfeitamente Brancos Girando
+            // Orbes Girando
             orbs.forEach(orb => {
-                orb.angle += isTranslating ? orb.speed * 6 : orb.speed; 
-                let orbRadius = baseRadius + 30 + orb.distanceOffset + (isTranslating ? 25 : 0);
+                orb.angle += isTranslating ? orb.speed * 12 : orb.speed; 
+                let orbRadius = baseRadius + 30 + orb.distanceOffset + (isTranslating ? 35 : 0);
                 let oX = cx + Math.cos(orb.angle) * orbRadius;
                 let oY = cy + Math.sin(orb.angle) * orbRadius;
 
@@ -263,6 +300,21 @@
                 ambCtx.fill();
                 ambCtx.shadowBlur = 0;
             });
+
+            // Desenhar Rastro do Mouse (esfumaçado preto)
+            for (let i = 0; i < mouseTrail.length; i++) {
+                let p = mouseTrail[i];
+                ambCtx.beginPath();
+                ambCtx.arc(p.x, p.y, p.life * 6, 0, Math.PI * 2);
+                ambCtx.fillStyle = `rgba(0, 0, 0, ${p.life * 0.8})`; // Cor preta
+                ambCtx.shadowColor = `rgba(255, 255, 255, ${p.life * 0.5})`; // Leve brilho branco
+                ambCtx.shadowBlur = 5;
+                ambCtx.fill();
+                ambCtx.shadowBlur = 0;
+                p.life -= 0.04; // Velocidade em que a partícula some
+            }
+            // Remove partículas mortas
+            mouseTrail = mouseTrail.filter(p => p.life > 0);
 
             ambTime += 0.01;
             requestAnimationFrame(drawAmbient);
@@ -285,24 +337,21 @@
                 span.dataset.rune = runeChar;
                 span.textContent = runeChar;
 
-                // Variáveis CSS customizadas para espalhar aleatoriamente no estilhaço
                 span.style.setProperty('--tx', (Math.random() * 60 - 30) + 'px');
                 span.style.setProperty('--ty', (Math.random() * -60 - 20) + 'px');
                 span.style.setProperty('--tr', (Math.random() * 180 - 90) + 'deg');
 
-                // Hover para traduzir letra para preto antes do mass translate
+                // Novo Hover: Troca a letra e adiciona a animação de Preto para Branco
                 span.addEventListener('mouseenter', () => {
                     if(!span.classList.contains('revealed') && !isTranslating) {
                         span.textContent = span.dataset.real;
-                        span.style.color = '#000000';
-                        span.style.textShadow = '0 0 10px rgba(255,255,255,0.9)';
+                        span.classList.add('hover-translate');
                     }
                 });
                 span.addEventListener('mouseleave', () => {
                     if(!span.classList.contains('revealed') && !isTranslating) {
                         span.textContent = span.dataset.rune;
-                        span.style.color = '';
-                        span.style.textShadow = '';
+                        span.classList.remove('hover-translate');
                     }
                 });
 
@@ -310,50 +359,50 @@
             }
         });
 
-        // --- 3. ANIMAÇÃO COMPLETA DE TRADUÇÃO ---
+        // --- 3. ANIMAÇÃO COMPLETA DE TRADUÇÃO (Tempos Mais Rápidos) ---
         document.getElementById('mass-btn').addEventListener('click', () => {
             if(isTranslating) return; 
             isTranslating = true;
             const voidDarkness = document.getElementById('void');
 
-            // 1. O sol queima e gira violentamente IMEDIATAMENTE (pois isTranslating = true)
+            // Sol queima instantaneamente e gera o redemoinho na água.
             
-            // 2. Após 2 segundos da explosão do sol, a tela escurece
+            // Reduzido de 2000ms para 1000ms
             setTimeout(() => {
                 voidDarkness.style.opacity = '1'; 
                 
-                // 3. Enquanto está tudo escuro, as letras se revelam em PRETO
+                // Reduzido de 1500ms para 800ms na escuridão
                 setTimeout(() => {
                     container.querySelectorAll('.sunny-letter').forEach(l => {
                         l.textContent = l.dataset.real;
                         l.style.color = '#000000';
                         l.style.textShadow = '0 0 15px #ffffff';
+                        l.classList.remove('hover-translate'); // Garante limpeza do hover
                     });
 
-                    // 4. A escuridão some (sol volta a ficar calmo)
                     voidDarkness.style.opacity = '0';
-                    isTranslating = false; 
+                    isTranslating = false; // Redemoinho começa a perder força suavemente
                     
-                    // 5. Deixa o texto preto visível por um curto momento e então ESTILHAÇA
+                    // Deixa preto, depois de 400ms estilhaça rápido
                     setTimeout(() => {
                         container.querySelectorAll('.sunny-letter').forEach(l => {
-                            l.style.color = ''; // Remove inline para usar CSS
+                            l.style.color = ''; 
                             l.style.textShadow = '';
-                            l.classList.add('shatter-anim'); // Letras quebram e somem
+                            l.classList.add('shatter-anim'); 
                         });
 
-                        // 6. Finalmente, limpa o estilhaço e ativa o BRANCO FORTE
+                        // Revela o branco em 600ms
                         setTimeout(() => {
                             container.querySelectorAll('.sunny-letter').forEach(l => {
                                 l.classList.remove('shatter-anim');
                                 l.classList.add('revealed');
                             });
-                        }, 900); // Duração exata do keyframe shatterFade
+                        }, 600); 
 
-                    }, 800); // Tempo que as letras ficam pretas paradas pós-escuridão
+                    }, 400); 
 
-                }, 1500); // Tempo total em escuridão absoluta
-            }, 2000); // Tempo do sol queimando forte antes de apagar
+                }, 800); 
+            }, 1000); 
         });
     </script>
 </body>
