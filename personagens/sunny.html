@@ -8,55 +8,115 @@
         /* --- ESTILOS GLOBAIS --- */
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background: #050505; overflow: hidden; font-family: monospace;
+            background: #050505; font-family: monospace;
             color: #e0f7fa; cursor: default;
+            overflow-x: hidden;
+            overflow-y: hidden; /* Bloqueado no início (Fase 1) */
+            scroll-behavior: smooth;
         }
 
-        /* --- TELA DE RENDERIZAÇÃO --- */
+        /* --- TELA DE RENDERIZAÇÃO FIXA --- */
         #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
 
-        /* --- INTERFACE E CAIXA --- */
-        .content-wrapper {
-            position: relative; z-index: 20; max-width: 750px; width: 100%; height: 100%; margin: 0 auto;
-            padding: 5vh 20px 40px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; pointer-events: none;
+        /* --- LAYOUT EM NÍVEIS (FASE 1 E FASE 2) --- */
+        .main-scroller {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
         }
-        
-        .mass-translate-container, .character-container, .back-btn-container { pointer-events: auto; }
 
-        .mass-translate-container { position: absolute; top: 5vh; z-index: 30; display: none; }
-        .mass-translate-btn {
-            background: #050608; border: 1px solid #141923; padding: 12px 24px; border-radius: 4px;
-            color: #4f5b73; font-family: monospace; font-size: 14px; cursor: pointer;
-            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        /* FASE 1: Tela Inicial do Sol */
+        .phase-one {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
-        .mass-translate-btn:hover { border-color: #ffffff; color: #ffffff; text-shadow: 0 0 8px #fff; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
 
-        .character-container {
-            display: flex; flex-direction: column; gap: 20px;
-            background: transparent; border: none; box-shadow: none;
-            align-items: center; text-align: center; position: relative;
-            cursor: pointer; /* Indica que o Sol é clicável no início */
-        }
-        
-        .character-img { 
-            width: 140px; height: 140px; object-fit: cover; border-radius: 50%; 
-            border: 2px solid #ffffff; filter: grayscale(80%) brightness(70%); 
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        /* Âncora invisível interativa para o clique no Sol */
+        #sun-trigger {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: auto;
+            z-index: 30;
             transition: transform 0.3s ease;
         }
-        .character-container:hover .character-img {
-            transform: scale(1.03);
+        #sun-trigger:hover {
+            transform: scale(1.05);
         }
 
-        /* --- TEXTOS DAS RUNAS --- */
-        .sunny-rune-text { display: none; }
-        .sunny-rune-text p { margin: 8px 0; font-family: monospace; font-size: 16px; color: #555c6b; }
+        /* FASE 2: Arquivos Subterrâneos de Sunny */
+        .phase-two {
+            min-height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 60px 20px;
+            display: none; /* Revelado dinamicamente */
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+        }
+
+        /* --- CAIXA DE TEXTO / REGISTRO DA ALMA --- */
+        .soul-registry-box {
+            background: rgba(4, 5, 8, 0.85);
+            border: 1px solid #101520;
+            backdrop-filter: blur(8px);
+            max-width: 780px;
+            width: 100%;
+            padding: 45px;
+            box-sizing: border-box;
+            border-radius: 6px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            pointer-events: auto;
+            margin-bottom: 60px;
+        }
+
+        .registry-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            border-bottom: 1px solid #141923;
+            padding-bottom: 25px;
+        }
+
+        .character-img { 
+            width: 110px; height: 110px; object-fit: cover; border-radius: 50%; 
+            border: 2px solid #3a4454; filter: grayscale(50%) brightness(80%); 
+            box-shadow: 0 0 15px rgba(255,255,255,0.1);
+        }
+
+        .header-meta h2 { margin: 0 0 5px 0; font-size: 20px; letter-spacing: 2px; color: #ffffff; }
+        .header-meta p { margin: 0; font-size: 13px; color: #4f5b73; }
+
+        /* --- AREA DE TEXTOS E RUNAS --- */
+        .sunny-rune-text { width: 100%; }
+        .sunny-rune-text h3 { color: #8895b0; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; margin: 25px 0 10px 0; border-left: 2px solid #3a4454; padding-left: 10px; }
+        .sunny-rune-text p { margin: 10px 0; font-family: monospace; font-size: 15px; color: #555c6b; line-height: 1.6; }
         
         .sunny-letter { 
-            display: inline-block; font-family: serif; color: #4a5463; 
-            transition: color 0.15s, text-shadow 0.15s;
+            display: inline-block; font-family: serif; color: #3e4756; 
+            transition: color 0.1s, text-shadow 0.1s;
         }
+
+        /* --- BOTÃO DE TRADUÇÃO EM MASSA (REALOCADO) --- */
+        .mass-translate-container { align-self: flex-end; margin-bottom: 10px; }
+        .mass-translate-btn {
+            background: #090b11; border: 1px solid #141923; padding: 10px 20px; border-radius: 4px;
+            color: #55627c; font-family: monospace; font-size: 13px; cursor: pointer;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .mass-translate-btn:hover { border-color: #ffffff; color: #ffffff; text-shadow: 0 0 8px #fff; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
 
         /* Animação de Estilhaçamento (Shatter) */
         .shatter-anim {
@@ -68,7 +128,7 @@
             100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--tr)); opacity: 0; filter: blur(5px); color: transparent; text-shadow: none; }
         }
 
-        /* O Estado Revelado Final (Branco Forte) */
+        /* O Estado Revelado Final (Branco Forte Permanente) */
         .sunny-letter.revealed {
             color: #ffffff !important; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.8) !important;
             animation: gentleFloat 4s infinite ease-in-out;
@@ -85,9 +145,9 @@
             background-color: #000000; z-index: 200; opacity: 0; pointer-events: none;
             transition: opacity 0.8s ease-in-out;
         }
-        .scene-title { position: fixed; bottom: 15px; left: 20px; font-size: 1.2rem; letter-spacing: 0.2rem; color: rgba(255, 255, 255, 0.4); z-index: 5; }
+        .scene-title { position: fixed; bottom: 15px; left: 20px; font-size: 1.2rem; letter-spacing: 0.2rem; color: rgba(255, 255, 255, 0.2); z-index: 5; }
 
-        .back-btn-container { position: absolute; bottom: 5vh; }
+        .back-btn-container { pointer-events: auto; margin-top: 20px; }
         .back-btn { border: 1px solid #141923; padding: 10px 30px; border-radius: 4px; color: #4f5b73; text-decoration: none; text-transform: uppercase; transition: 0.3s; }
         .back-btn:hover { background: #050608; color: #fff; border-color: #fff; }
     </style>
@@ -99,35 +159,61 @@
 
     <canvas id="ambient-canvas"></canvas>
 
-    <div class="content-wrapper">
-        <div class="mass-translate-container" id="mass-container">
-            <button class="mass-translate-btn" id="mass-btn">Traduzir Registro da Alma</button>
-        </div>
+    <div class="main-scroller">
+        <section class="phase-one" id="p1-section">
+            <div id="sun-trigger" title="Clique no Sol Negro"></div>
+        </section>
 
-        <div class="character-container" id="char-box">
-            <img src="../img/lossunny.jpg" alt="Sunless" class="character-img">
-            <div class="sunny-rune-text" id="sunny-soul-core">
-                <p>Nome Verdadeiro: Perdido da Luz</p>
-                <p>Nome: Sunless</p>
-                <p>Rank: Soberano</p>
-                <p>Classe: Divina</p>
-                <p>Atributos: [Lorde das Sombras], [Mestre das Sombras], [Encarnação das Trevas]</p>
+        <section class="phase-two" id="p2-section">
+            
+            <div class="soul-registry-box">
+                <div class="mass-translate-container">
+                    <button class="mass-translate-btn" id="mass-btn">Traduzir Tudo Permanentemente</button>
+                </div>
+
+                <div class="registry-header">
+                    <img src="../img/lossunny.jpg" alt="Sunless" class="character-img">
+                    <div class="header-meta">
+                        <h2>REGISTRO DE ESSÊNCIA</h2>
+                        <p>ID do Fragmento de Alma: #0000-SUNLESS</p>
+                    </div>
+                </div>
+
+                <div class="sunny-rune-text" id="sunny-soul-core">
+                    <h3>Identidade Central</h3>
+                    <p>Nome Verdadeiro: Perdido da Luz</p>
+                    <p>Nome Comum: Sunless</p>
+                    <p>Falsa Alcunha: Solitário</p>
+
+                    <h3>Classificação Existencial</h3>
+                    <p>Rank Corrente: Soberano</p>
+                    <p>Classe Divina: Divina (Sete Núcleos de Sombra)</p>
+
+                    <h3>Atributos de Linhagem</h3>
+                    <p>Atributos Primários: [Lorde das Sombras], [Mestre das Sombras], [Encarnação das Trevas], [Chama do Destino], [Viajante do Reino das Sombras]</p>
+
+                    <h3>Legado de Aspecto</h3>
+                    <p>Estilo Avançado: [Dança das Sombras - Nível Maximo]</p>
+
+                    <h3>Memórias Vinculadas</h3>
+                    <p>Arsenal Ativo: [Gota de Sangue], [Espada do Pecado], [Manto do Submundo], [Estilhaço do Luar], [Cadeia de Destinos]</p>
+                </div>
             </div>
-        </div>
 
-        <div class="back-btn-container"><a href="../index.html" class="back-btn">← Retornar à Base</a></div>
+            <div class="back-btn-container"><a href="../index.html" class="back-btn">← Retornar à Base</a></div>
+        </section>
     </div>
 
     <script>
         // --- 1. MOTOR DO MAR E DOS SÓIS ---
         const ambCanvas = document.getElementById('ambient-canvas');
         const ambCtx = ambCanvas.getContext('2d');
-        const charBox = document.getElementById('char-box');
+        const sunTrigger = document.getElementById('sun-trigger');
         
         let ambTime = 0;
         let isTranslating = false; 
         let whirlFactor = 0; 
-        let currentPhase = 1; // Fase 1: Apenas Sol Inicial | Fase 2: Redirecionado para Textos
+        let currentPhase = 1; 
         
         // --- Rastro do Mouse ---
         let mouseTrail = [];
@@ -209,9 +295,10 @@
             whirlFactor += isTranslating ? 0.02 : -0.01;
             whirlFactor = Math.max(0, Math.min(1, whirlFactor));
 
-            const boxRect = charBox.getBoundingClientRect();
-            const cx = boxRect.left + boxRect.width / 2;
-            const cy = boxRect.top + (currentPhase === 1 ? boxRect.height / 2 : 70); // Ajusta o centro do sol na Fase 2
+            // Captura dinâmica do trigger do sol (Sobe e desce conforme o scroll da página)
+            const sunRect = sunTrigger.getBoundingClientRect();
+            const cx = sunRect.left + sunRect.width / 2;
+            const cy = sunRect.top + sunRect.height / 2;
 
             // Oceano com Correntezas e Redemoinho
             let seaLevel = ambCanvas.height * 0.82;
@@ -245,7 +332,7 @@
             }
 
             // O 7º Sol Grande
-            const baseRadius = 70; // Mantém fixo estrutural para compatibilidade de layout
+            const baseRadius = 70; 
 
             ambCtx.beginPath();
             for(let a = 0; a <= Math.PI * 2.1; a += 0.05) {
@@ -313,7 +400,7 @@
         resizeAmbient(); 
         drawAmbient();
 
-        // --- 2. GERAÇÃO E INTERAÇÃO DINÂMICA DAS RUNAS (FASE 2) ---
+        // --- 2. GERAÇÃO DA ARQUITETURA DE RUNAS DINÂMICAS ---
         const runes = ['ᚦ', 'ᚧ', 'ᚨ', 'ᛒ', 'ᛃ', 'ᛄ', 'ᛅ', 'ᛆ', 'ᛇ', 'ᛈ', 'ᛉ'];
         const container = document.getElementById('sunny-soul-core');
         
@@ -331,64 +418,62 @@
                 span.style.setProperty('--ty', (Math.random() * -60 - 20) + 'px');
                 span.style.setProperty('--tr', (Math.random() * 180 - 90) + 'deg');
 
-                let resetTimer = null;
-
-                // Passar o mouse por cima: tradução instantânea branca
+                // Hover ultra rápido e retenção de 1.5s controlado direto na propriedade do span
                 span.addEventListener('mouseenter', () => {
                     if(currentPhase !== 2 || span.classList.contains('revealed') || isTranslating) return;
-                    
-                    if(resetTimer) clearTimeout(resetTimer); // Cancela o retrocesso se passar o mouse antes do tempo acabar
+                    if(span.timeoutId) clearTimeout(span.timeoutId);
                     
                     span.textContent = span.dataset.real;
                     span.style.color = '#ffffff';
-                    span.style.textShadow = '0 0 10px rgba(255,255,255,0.8)';
+                    span.style.textShadow = '0 0 10px rgba(255,255,255,0.9)';
                 });
 
-                // Remover o mouse: aguarda 1,5 segundos e volta a ser rúnico
                 span.addEventListener('mouseleave', () => {
                     if(currentPhase !== 2 || span.classList.contains('revealed') || isTranslating) return;
                     
-                    resetTimer = setTimeout(() => {
+                    span.timeoutId = setTimeout(() => {
                         span.textContent = span.dataset.rune;
                         span.style.color = '';
                         span.style.textShadow = '';
-                    }, 1500); // Retorna em 1.5s
+                    }, 1500);
                 });
 
                 p.appendChild(span);
             }
         });
 
-        // --- 3. EVENTO DE REDIRECIONAMENTO (CLIQUE NO SOL) ---
-        charBox.addEventListener('click', () => {
-            // Só executa se estivermos na Fase 1 e sem animações pendentes
+        // --- 3. EVENTO DE ATIVAÇÃO E REDIRECIONAMENTO (DESCIDA) ---
+        sunTrigger.addEventListener('click', () => {
             if (currentPhase !== 1 || isTranslating) return;
             isTranslating = true;
             
             const voidDarkness = document.getElementById('void');
             voidDarkness.style.opacity = '1'; // Tela fica preta
 
-            // Quando a escuridão cobrir tudo perfeitamente (1000ms)
+            // Durante o breu total (1000ms)
             setTimeout(() => {
-                currentPhase = 2; // Passa para a fase de leitura
-                charBox.style.cursor = 'default'; // Sol deixa de ser o botão principal
+                currentPhase = 2;
+                sunTrigger.style.pointerEvents = 'none'; // Desativa interações no gatilho antigo
                 
-                // Exibe os textos rúnicos e o painel superior de Tradução em massa
-                document.getElementById('mass-container').style.display = 'block';
-                container.style.display = 'block';
+                // Monta estruturalmente a Fase 2 e permite o scroll vertical na página
+                document.getElementById('p2-section').style.display = 'flex';
+                document.documentElement.style.overflowY = 'auto';
+                document.body.style.overflowY = 'auto';
 
-                // Dispersa a escuridão rapidamente (400ms)
+                // Move instantaneamente a janela para baixo (Fase 2)
+                window.scrollTo(0, window.innerHeight);
+
+                // Libera a visão rapidamente removendo o blackout
                 setTimeout(() => {
                     voidDarkness.style.opacity = '0';
-                    isTranslating = false; // Normaliza o balanço das águas
+                    isTranslating = false;
                 }, 400);
 
             }, 1000);
         });
 
-        // --- 4. TRADUÇÃO EM MASSA PERMANENTE (FASE 2) ---
-        document.getElementById('mass-btn').addEventListener('click', (e) => {
-            e.stopPropagation(); // Previne conflitos de cliques no container
+        // --- 4. TRADUÇÃO EM MASSA PERMANENTE COM COMPORTAMENTO SHATTER ---
+        document.getElementById('mass-btn').addEventListener('click', () => {
             if(isTranslating || currentPhase !== 2) return; 
             isTranslating = true;
             const voidDarkness = document.getElementById('void');
