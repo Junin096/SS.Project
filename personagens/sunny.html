@@ -5,112 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Alma - Lorde das Sombras</title>
     <style>
-        body { 
-            background-color: #020304 !important; 
-            overflow-x: hidden;
-            position: relative;
-            margin: 0; padding: 0;
-            min-height: 100vh;
+        /* --- ESTILOS GLOBAIS --- */
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: #000000; overflow: hidden; font-family: monospace;
+            color: #e0f7fa;
         }
 
-        /* --- BOTÃO DE INVOCAÇÃO --- */
-        .mass-translate-container { display: flex; justify-content: center; margin-bottom: 25px; margin-top: 20px; z-index: 30; position: relative; }
+        /* --- TELAS DE RENDERIZAÇÃO --- */
+        #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
+        #action-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; }
+
+        /* --- INTERFACE E CAIXA --- */
+        .content-wrapper {
+            position: relative; z-index: 20; max-width: 750px; width: 100%; margin: 0 auto;
+            padding: 5vh 20px 40px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
+        }
+
+        .mass-translate-container { margin-bottom: 30px; margin-top: 20px; }
         .mass-translate-btn {
             background: #050608; border: 1px solid #141923; padding: 12px 24px; border-radius: 4px;
-            color: #4f5b73; font-family: monospace; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
-            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.8); 
+            color: #4f5b73; font-family: monospace; font-size: 14px; cursor: pointer;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.8);
         }
         .mass-translate-btn:hover { border-color: #707c91; color: #ffffff; text-shadow: 0 0 8px #fff; }
 
-        /* --- ELEMENTOS DE AMBIENTAÇÃO --- */
-        .essence-thread { position: fixed; width: 200px; height: 200px; pointer-events: none; z-index: 20; opacity: 0.1; animation: threadPulse 5s infinite ease-in-out; }
-        .thread-tl { top: 0; left: 0; border-left: 2px solid #141923; border-top: 2px solid #141923; }
-        .thread-br { bottom: 0; right: 0; border-right: 2px solid #141923; border-bottom: 2px solid #141923; }
-        @keyframes threadPulse { 0%, 100% { transform: scale(1); opacity: 0.1; } 50% { transform: scale(1.05); opacity: 0.25; } }
-
-        .content-wrapper { position: relative; z-index: 20; max-width: 750px; width: 100%; margin: 0 auto; padding: 5vh 20px 40px 20px; box-sizing: border-box; }
-        
-        /* --- CAIXA PRINCIPAL PROMINENTE --- */
-        .character-container { 
-            display: flex; gap: 25px; 
-            background: #07090d; /* Mais escuro e sólido para destacar do fundo */
-            border: 2px solid #161c26; /* Borda mais grossa e proeminente */
-            padding: 30px; 
-            border-radius: 4px; 
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(0, 0, 0, 0.6); 
-            align-items: center; position: relative; 
-            transition: opacity 0.1s, transform 0.1s;
-            z-index: 25;
+        .character-container {
+            display: flex; gap: 25px; background: #07090d; border: 2px solid #161c26;
+            padding: 30px; border-radius: 4px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(0, 0, 0, 0.6);
+            align-items: center; position: relative; transition: opacity 0.1s, transform 0.1s;
         }
         @media (max-width: 600px) { .character-container { flex-direction: column; text-align: center; } }
-        
-        .character-img { width: 180px; height: 240px; object-fit: cover; border: 1px solid #141923; border-radius: 2px; filter: grayscale(80%) brightness(50%); }
+        .character-img { width: 180px; height: 240px; object-fit: cover; border: 1px solid #141923; filter: grayscale(80%) brightness(50%); }
 
         /* --- ANIMAÇÕES DE IMPACTO --- */
-        .shake-cracking { animation: violentGrip 0.12s infinite; border-color: #3a1414 !important; box-shadow: 0 0 50px rgba(0,0,0,1) !important; }
+        .shake-cracking { animation: violentGrip 0.1s infinite; box-shadow: 0 0 50px rgba(0,0,0,1) !important; }
         @keyframes violentGrip {
-            0% { transform: translate(1px, 2px) rotate(0deg) scale(1); }
-            50% { transform: translate(-2px, -1px) rotate(-0.5deg) scale(0.99); }
-            100% { transform: translate(2px, -1px) rotate(0.5deg) scale(1.01); }
+            0% { transform: translate(2px, 2px) rotate(0deg); }
+            50% { transform: translate(-2px, -1px) rotate(-1deg); }
+            100% { transform: translate(1px, -2px) rotate(1deg); }
         }
-        .shatter-hidden { opacity: 0 !important; pointer-events: none; transform: scale(0.7); }
+        .shatter-hidden { opacity: 0 !important; pointer-events: none; }
 
-        /* --- ESCURIDÃO ABSOLUTA --- */
+        /* --- TEXTOS E ANIMAÇÃO DAS PROFUNDEZAS --- */
+        .sunny-rune-text p { margin: 12px 0; font-family: monospace; font-size: 16px; color: #2d3545; }
+        .sunny-letter { display: inline-block; font-family: serif; color: #1c222e; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
+        
+        .sunny-letter.revealed {
+            color: #3b4659 !important; font-weight: bold; text-shadow: 0 2px 5px #000;
+            animation: rollingShadow 4.5s infinite ease-in-out;
+        }
+
+        /* Animação do texto surgindo do fundo */
+        .emerge-from-void {
+            animation: emergeFromDeep 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        @keyframes emergeFromDeep {
+            0% { transform: scale(0.6) translateY(20px); opacity: 0; filter: blur(8px); }
+            100% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); }
+        }
+
+        @keyframes rollingShadow {
+            0%, 100% { color: #30394a; text-shadow: 0 3px 6px #000; }
+            50% { color: #53627d; text-shadow: 0 -2px 10px #000; transform: translateY(-0.5px); }
+        }
+
+        /* --- ESCURIDÃO E AMBIENTE --- */
         .absolute-darkness {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000000; z-index: 200; opacity: 0; pointer-events: none;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 0.8s ease-in-out;
         }
+        .scene-title { position: fixed; bottom: 15px; left: 20px; font-size: 1.2rem; letter-spacing: 0.2rem; color: rgba(224, 247, 250, 0.3); z-index: 5; }
 
-        /* --- TEXTOS E AS SOMBRAS ROLANTES --- */
-        .sunny-rune-text p { margin: 12px 0; font-family: monospace; font-size: 16px; min-height: 20px; color: #2d3545; }
-        
-        /* Estado não traduzido: Sombrio e misterioso */
-        .sunny-letter { display: inline-block; font-family: serif; color: #1c222e; text-shadow: 0 0 3px rgba(0,0,0,0.8); transition: all 0.2s; }
-        .sunny-letter.spell-attempt { color: #000 !important; transform: scale(0.8); }
-        .sunny-letter.weaving-essence { color: #000 !important; text-shadow: 0 0 10px #000 !important; transform: scale(1.3); }
-        
-        /* Traduzido: Aspecto denso de abismo com sombras rastejantes sob o texto */
-        .sunny-letter.revealed { 
-            color: #3b4659 !important; 
-            font-weight: bold;
-            text-shadow: 0 2px 5px #000000;
-            animation: rollingShadow 4.5s infinite ease-in-out;
-        }
-        @keyframes rollingShadow {
-            0%, 100% { color: #30394a !important; text-shadow: 0 3px 6px #000, 0 0 5px rgba(0,0,0,0.9); }
-            50% { color: #53627d !important; text-shadow: 0 -2px 10px #000, 0 0 15px rgba(0,0,0,1); transform: translateY(-0.5px); }
-        }
-
-        .shadow-strand { position: fixed; pointer-events: none; z-index: 100; border-radius: 50%; background: #000; box-shadow: 0 0 5px #000; }
-        
-        /* Telas de desenho */
-        #ambient-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5; }
-        #action-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 150; }
-
-        .back-btn-container { display: flex; justify-content: center; margin-top: 40px; z-index: 20; position: relative; }
-        .back-btn { background: transparent; border: 1px solid #141923; padding: 10px 30px; border-radius: 4px; color: #4f5b73; font-family: monospace; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
-        .back-btn:hover { background: #050608; border-color: #5c6982; color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.05); }
+        .back-btn-container { margin-top: 40px; }
+        .back-btn { border: 1px solid #141923; padding: 10px 30px; border-radius: 4px; color: #4f5b73; text-decoration: none; text-transform: uppercase; transition: 0.3s; }
+        .back-btn:hover { background: #050608; color: #fff; }
     </style>
 </head>
 <body>
 
     <div class="absolute-darkness" id="void"></div>
+    <div class="scene-title">COSTA ESQUECIDA - MAR DA ALMA</div>
 
-    <div class="essence-thread thread-tl"></div>
-    <div class="essence-thread thread-br"></div>
-    
     <canvas id="ambient-canvas"></canvas>
-    <canvas id="action-canvas"></canvas> <div class="content-wrapper">
+    <canvas id="action-canvas"></canvas>
+
+    <div class="content-wrapper">
         <div class="mass-translate-container">
-            <button class="mass-translate-btn" id="mass-btn">
-                Manifestar Tentáculos de Sombra
-            </button>
+            <button class="mass-translate-btn" id="mass-btn">Manifestar Tentáculos de Sombra</button>
         </div>
 
         <div class="character-container" id="char-box">
             <img src="../img/lossunny.jpg" alt="Sunless" class="character-img">
-            
             <div class="sunny-rune-text" id="sunny-soul-core">
                 <p>Nome Verdadeiro: Perdido da Luz</p>
                 <p>Nome: Sunless</p>
@@ -120,63 +107,90 @@
             </div>
         </div>
 
-        <div class="back-btn-container">
-            <a href="../index.html" class="back-btn">← Retornar à Base</a>
-        </div>
+        <div class="back-btn-container"><a href="../index.html" class="back-btn">← Retornar à Base</a></div>
     </div>
 
     <script>
-        // --- 1. O MAR DA ALMA E OS 7 SÓIS NEGROS ---
-        const canvas = document.getElementById('ambient-canvas'); const ctx = canvas.getContext('2d');
-        let particles = []; 
-        function resCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resCanvas); resCanvas();
+        // --- 1. MOTOR DO MAR DA ALMA (AMBIENT CANVAS) ---
+        const ambCanvas = document.getElementById('ambient-canvas');
+        const ambCtx = ambCanvas.getContext('2d');
+        let ambTime = 0, wavesPattern, sunsX = [];
+        const numSuns = 7;
 
-        class P { constructor() { this.x = Math.random()*canvas.width; this.y = Math.random()*canvas.height; this.size = Math.random()*1.5; this.speedY = -0.15; } update() { this.y += this.speedY; if(this.y<0) this.y=canvas.height; } draw() { ctx.fillStyle = "rgba(45,53,69,0.2)"; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); } }
-        for(let i=0;i<30;i++) particles.push(new P());
+        function resizeAmbient() {
+            ambCanvas.width = window.innerWidth;
+            ambCanvas.height = window.innerHeight;
+            sunsX = [];
+            for (let i = 0; i < numSuns; i++) sunsX.push((i + 0.5) * (ambCanvas.width / numSuns));
+            createWavesTexture();
+        }
+        window.addEventListener('resize', resizeAmbient);
 
-        const suns = [
-            {x: 0.15, y: 0.22, r: 26}, {x: 0.28, y: 0.15, r: 32}, {x: 0.42, y: 0.25, r: 22},
-            {x: 0.50, y: 0.11, r: 42}, // Sol Supremo Dominante
-            {x: 0.58, y: 0.25, r: 22}, {x: 0.72, y: 0.15, r: 32}, {x: 0.85, y: 0.22, r: 26}
-        ];
+        function createWavesTexture() {
+            const pCanvas = document.createElement('canvas'); const pCtx = pCanvas.getContext('2d');
+            pCanvas.width = 128; pCanvas.height = 128;
+            pCtx.fillStyle = '#020304'; pCtx.fillRect(0, 0, 128, 128);
+            pCtx.strokeStyle = '#1a1d21'; pCtx.lineWidth = 1.5;
+            pCtx.beginPath();
+            for (let i = 0; i < 64; i++) {
+                pCtx.moveTo(0, i * 2);
+                for (let x = 0; x <= 128; x += 4) pCtx.lineTo(x, i * 2 + Math.sin(x * 0.05 + i * 0.2) * 6);
+            }
+            pCtx.stroke();
+            wavesPattern = ambCtx.createPattern(pCanvas, 'repeat');
+        }
 
-        let waveOffset = 0;
-        function anim() {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            
-            // Desenhar os 7 Sóis Negros
-            suns.forEach(s => {
-                let sX = s.x * canvas.width; let sY = s.y * canvas.height;
-                ctx.beginPath(); ctx.arc(sX, sY, s.r, 0, Math.PI * 2); ctx.fillStyle = "#000000";
-                ctx.shadowColor = "rgba(255, 255, 255, 0.18)"; ctx.shadowBlur = 10; ctx.fill();
-                ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(200, 210, 230, 0.6)"; ctx.lineWidth = 1.2; ctx.stroke();
+        const particles = Array.from({length: 25}, () => ({
+            x: Math.random(), y: Math.random(), s: Math.random() * 1.5 + 0.5, speed: Math.random() * 0.002 + 0.001
+        }));
+
+        function drawAmbient() {
+            ambCtx.fillStyle = '#000000'; ambCtx.fillRect(0, 0, ambCanvas.width, ambCanvas.height);
+
+            // Atmosfera (partículas)
+            ambCtx.fillStyle = 'rgba(224, 247, 250, 0.3)';
+            particles.forEach(p => {
+                p.y -= p.speed; if(p.y < 0) p.y = 1;
+                ambCtx.beginPath(); ambCtx.arc(p.x * ambCanvas.width, p.y * ambCanvas.height * 0.4, p.s, 0, Math.PI*2); ambCtx.fill();
             });
 
-            // O Mar de Água Preta
-            waveOffset += 0.01;
-            const waveLayers = [
-                { y: canvas.height * 0.72, freq: 0.004, amp: 14, speed: 1, stroke: "#0f131c" },
-                { y: canvas.height * 0.78, freq: 0.006, amp: 10, speed: -1.2, stroke: "#0b0d14" },
-                { y: canvas.height * 0.85, freq: 0.003, amp: 18, speed: 0.7, stroke: "#131824" }
-            ];
+            // Sóis Negros
+            sunsX.forEach(x => {
+                ambCtx.beginPath(); ambCtx.arc(x, ambCanvas.height * 0.15, Math.min(ambCanvas.width * 0.02, 25), 0, Math.PI * 2);
+                ambCtx.fillStyle = '#000000'; ambCtx.shadowColor = 'rgba(224, 247, 250, 0.5)'; ambCtx.shadowBlur = 20; ambCtx.fill();
+                ambCtx.shadowBlur = 0; ambCtx.strokeStyle = 'rgba(224, 247, 250, 0.3)'; ambCtx.lineWidth = 1; ambCtx.stroke();
+            });
 
-            waveLayers.forEach(layer => {
-                ctx.beginPath(); ctx.moveTo(0, canvas.height);
-                for (let x = 0; x <= canvas.width; x += 20) {
-                    let y = layer.y + Math.sin(x * layer.freq + waveOffset * layer.speed) * layer.amp;
-                    ctx.lineTo(x, y);
+            // Oceano
+            ambCtx.save();
+            ambCtx.beginPath(); ambCtx.rect(0, ambCanvas.height * 0.35, ambCanvas.width, ambCanvas.height * 0.65); ambCtx.clip();
+            ambCtx.fillStyle = wavesPattern;
+            ambCtx.translate(ambTime * 0.5, ambTime * 0.2);
+            ambCtx.fillRect(-ambCanvas.width, -ambCanvas.height, ambCanvas.width * 2, ambCanvas.height * 2);
+            ambCtx.restore();
+
+            // Reflexos
+            sunsX.forEach((x, j) => {
+                ambCtx.save(); ambCtx.translate(x, ambCanvas.height * 0.35);
+                ambCtx.strokeStyle = 'rgba(224, 247, 250, 0.4)'; ambCtx.lineWidth = 1.5;
+                for (let i = 0; i < 10; i++) {
+                    let yRef = i * ((ambCanvas.height*0.65) / 10) + (ambTime * 8) % ((ambCanvas.height*0.65) / 10);
+                    let amp = Math.max(5, 30 - yRef*0.05);
+                    ambCtx.beginPath(); ambCtx.moveTo(0, yRef);
+                    for (let rx = -40; rx < 40; rx += 5) {
+                        ambCtx.lineTo(rx, yRef + Math.sin(rx * 0.05 + ambTime * 2 + j) * amp * Math.random());
+                    }
+                    ambCtx.stroke();
                 }
-                ctx.lineTo(canvas.width, canvas.height); ctx.closePath();
-                ctx.fillStyle = "#000000"; ctx.fill();
-                ctx.strokeStyle = layer.stroke; ctx.lineWidth = 2; ctx.stroke();
+                ambCtx.restore();
             });
 
-            particles.forEach(p=>{p.update();p.draw();});
-            requestAnimationFrame(anim);
-        } anim();
+            ambTime += 0.01;
+            requestAnimationFrame(drawAmbient);
+        }
+        resizeAmbient(); drawAmbient();
 
-        // --- 2. DECODIFICAÇÃO DE RUNAS MANUAL (HOVER) ---
+        // --- 2. GERAÇÃO DO TEXTO RÚNICO ---
         const runes = ['ᚦ', 'ᚧ', 'ᚨ', 'ᛒ', 'ᛃ', 'ᛄ', 'ᛅ', 'ᛆ', 'ᛇ'];
         const container = document.getElementById('sunny-soul-core');
         container.querySelectorAll('p').forEach(p => {
@@ -188,76 +202,73 @@
             }
         });
 
-        function spawnStrands(x,y){
-            for(let i=0; i<3; i++){
-                const s = document.createElement('div'); s.classList.add('shadow-strand');
-                s.style.width='3px'; s.style.height='3px'; s.style.left=x+'px'; s.style.top=y+'px';
-                let cX=x, cY=y, op=1; document.body.appendChild(s);
-                const m = setInterval(()=>{ cX+=(Math.random()-0.5)*5; cY+=(Math.random()-0.5)*5; op-=0.1; s.style.left=cX+'px'; s.style.top=cY+'px'; s.style.opacity=op; if(op<=0){clearInterval(m);s.remove();} },30);
-            }
-        }
-        function evolveLetter(l) {
-            if (l.textContent === ' ' || l.classList.contains('revealed') || l.classList.contains('spell-attempt')) return;
-            l.classList.add('spell-attempt');
-            setTimeout(() => {
-                l.classList.remove('spell-attempt'); l.classList.add('weaving-essence');
-                const r = l.getBoundingClientRect(); spawnStrands(r.left+window.scrollX, r.top+window.scrollY);
-                setTimeout(() => { l.classList.remove('weaving-essence'); l.textContent = l.dataset.real; l.classList.add('revealed'); }, 200);
-            }, 100);
-        }
-        container.querySelectorAll('.sunny-letter').forEach(l => { l.addEventListener('mouseenter', () => evolveLetter(l)); });
-
-        // --- 3. MOTOR CINEMATOGRÁFICO DE APERTO E EXPLOSÃO ---
-        const aCanvas = document.getElementById('action-canvas'); const aCtx = aCanvas.getContext('2d');
-        function resAction() { aCanvas.width = window.innerWidth; aCanvas.height = window.innerHeight; }
-        window.addEventListener('resize', resAction); resAction();
+        // --- 3. MOTOR DE AÇÃO (TENTÁCULOS, RACHADURAS ZIGZAG E ESTILHAÇOS) ---
+        const aCanvas = document.getElementById('action-canvas');
+        const aCtx = aCanvas.getContext('2d');
+        function resizeAction() { aCanvas.width = window.innerWidth; aCanvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeAction); resizeAction();
 
         document.getElementById('mass-btn').addEventListener('click', () => {
             const charBox = document.getElementById('char-box'); const voidDarkness = document.getElementById('void');
             const boxRect = charBox.getBoundingClientRect();
             const targetX = boxRect.left + boxRect.width / 2; const targetY = boxRect.top + boxRect.height / 2;
             
-            let tentacles = []; let shards = []; let flyingRunes = [];
+            let tentacles = [], shards = [], flyingRunes = [], cracks = [];
             let timeline = 'spawning'; // spawning -> grip -> shatter -> darkness -> reveal
-            let shakeStrength = 0;
-            let cracks = [];
-
-            // Os tentáculos agora nascem do fundo do Mar da Alma ou das bordas escuras inferiores
+            
+            // Gerar posições iniciais dos tentáculos do fundo da tela
             for(let i = 0; i < 8; i++) {
-                let startX = (canvas.width / 7) * i;
-                let startY = canvas.height + 40; // Nascem abaixo da linha de visão do mar
                 tentacles.push({
-                    x: startX, y: startY, hist: [], active: true, 
-                    angle: Math.atan2(targetY - startY, targetX - startX), length: 0
+                    x: (ambCanvas.width / 7) * i, y: ambCanvas.height + 50,
+                    hist: [], active: true, angle: Math.atan2(targetY - (ambCanvas.height+50), targetX - ((ambCanvas.width/7)*i)), length: 0
                 });
+            }
+
+            // Função recursiva para gerar rachaduras em Zigzag
+            function generateCrackPath(x, y, angle, length, depth) {
+                if (depth === 0 || length < 5) return;
+                let path = [{x, y}];
+                let curX = x, curY = y;
+                let segments = Math.floor(Math.random() * 4) + 3;
+                
+                for(let i = 0; i < segments; i++) {
+                    let segLen = length / segments;
+                    let jitterAngle = angle + (Math.random() - 0.5) * 1.5; // Desvio forte para zigue-zague
+                    curX += Math.cos(jitterAngle) * segLen;
+                    curY += Math.sin(jitterAngle) * segLen;
+                    path.push({x: curX, y: curY});
+                }
+                cracks.push(path);
+
+                // Ramificação
+                if (Math.random() < 0.5) {
+                    generateCrackPath(curX, curY, angle + (Math.random()>0.5?1:-1) * 0.8, length * 0.6, depth - 1);
+                }
             }
 
             function processScene() {
                 aCtx.clearRect(0, 0, aCanvas.width, aCanvas.height);
 
-                // --- FASE 1: RASTEJAR DOS TENTÁCULOS (Mais anatômicos) ---
+                // --- FASE 1: RASTEJAR E APERTAR ---
                 if (timeline === 'spawning' || timeline === 'grip') {
                     let allReached = true;
-                    aCtx.fillStyle = "rgba(1, 2, 3, 0.99)"; aCtx.shadowBlur = 15; aCtx.shadowColor = "#000000";
+                    aCtx.fillStyle = "rgba(2, 3, 4, 0.98)"; aCtx.shadowBlur = 20; aCtx.shadowColor = "#000000";
 
                     tentacles.forEach(t => {
                         if (t.active) {
                             let dist = Math.hypot(targetX - t.x, targetY - t.y);
-                            if (dist > 30) {
+                            if (dist > 40) {
                                 allReached = false;
-                                // Movimento ondulante orgânico de tentáculo
-                                t.x += Math.cos(t.angle) * 7.5 + Math.sin(t.length * 0.12) * 4;
-                                t.y += Math.sin(t.angle) * 7.5 + Math.cos(t.length * 0.12) * 4;
+                                t.x += Math.cos(t.angle) * 8 + Math.sin(t.length * 0.15) * 3;
+                                t.y += Math.sin(t.angle) * 8 + Math.cos(t.length * 0.15) * 3;
                                 t.angle = Math.atan2(targetY - t.y, targetX - t.x);
                                 t.hist.push({x: t.x, y: t.y}); t.length++;
                             } else { t.active = false; }
                         }
                         
-                        // Desenha o formato cônico (Grosso na base, fino na ponta)
                         t.hist.forEach((p, idx) => {
                             aCtx.beginPath();
-                            let progress = idx / t.hist.length;
-                            let r = Math.max(1.8, 26 * (1 - progress * 0.94)); // Base grossa afunilando perfeitamente
+                            let r = Math.max(2, 28 * (1 - (idx / t.hist.length) * 0.92));
                             aCtx.arc(p.x, p.y, r, 0, Math.PI*2); aCtx.fill();
                         });
                     });
@@ -265,104 +276,119 @@
                     if (allReached && timeline === 'spawning') {
                         timeline = 'grip';
                         charBox.classList.add('shake-cracking');
-                        
-                        // Começa a gerar linhas de rachadura visuais sobre a caixa
-                        setTimeout(() => { triggerShatter(); }, 1800);
+                        setTimeout(() => triggerShatter(), 1600);
                     }
                 }
 
-                // --- DESENHAR RACHADURAS NA CAIXA EM TEMPO REAL ---
+                // Desenhando Rachaduras tipo Vaso
                 if (timeline === 'grip') {
-                    shakeStrength += 0.15;
-                    aCtx.strokeStyle = "rgba(0, 0, 0, 0.95)"; aCtx.lineWidth = 3;
-                    if (Math.random() < 0.4) {
-                        cracks.push({
-                            x1: boxRect.left + Math.random()*boxRect.width, y1: boxRect.top + Math.random()*boxRect.height,
-                            x2: boxRect.left + Math.random()*boxRect.width, y2: boxRect.top + Math.random()*boxRect.height
-                        });
+                    aCtx.shadowBlur = 0; aCtx.strokeStyle = "rgba(0, 0, 0, 0.85)"; aCtx.lineJoin = 'miter';
+                    
+                    // Cria uma nova ramificação de rachadura partindo de uma borda aleatória
+                    if (Math.random() < 0.3) {
+                        let isSide = Math.random() > 0.5;
+                        let startX = isSide ? (Math.random()>0.5 ? boxRect.left : boxRect.right) : (boxRect.left + Math.random()*boxRect.width);
+                        let startY = isSide ? (boxRect.top + Math.random()*boxRect.height) : (Math.random()>0.5 ? boxRect.top : boxRect.bottom);
+                        let angleToCenter = Math.atan2(targetY - startY, targetX - startX);
+                        generateCrackPath(startX, startY, angleToCenter, 80 + Math.random()*50, 3);
                     }
-                    cracks.forEach(c => { aCtx.beginPath(); aCtx.moveTo(c.x1, c.y1); aCtx.lineTo(c.x2, c.y2); aCtx.stroke(); });
+
+                    cracks.forEach(path => {
+                        aCtx.beginPath();
+                        aCtx.moveTo(path[0].x, path[0].y);
+                        for(let i=1; i<path.length; i++) {
+                            aCtx.lineWidth = Math.max(0.5, 4 - i*0.8); // Fica fino na ponta
+                            aCtx.lineTo(path[i].x, path[i].y);
+                        }
+                        aCtx.stroke();
+                    });
                 }
 
-                // --- FASE 2: A EXPLOSÃO (FRAGMENTAÇÃO E RUNAS VOANDO) ---
+                // --- FASE 2: EXPLOSÃO (Polígonos Irregulares e Runas) ---
                 if (timeline === 'shatter') {
-                    // Desenha os pedaços da caixa voando
                     shards.forEach(s => {
-                        s.x += s.vx; s.y += s.vy; s.vy += 0.3; // Gravidade nos estilhaços
-                        s.rot += s.vRot;
+                        s.x += s.vx; s.y += s.vy; s.vy += 0.4; s.rot += s.vRot;
                         aCtx.save();
                         aCtx.translate(s.x, s.y); aCtx.rotate(s.rot);
-                        aCtx.fillStyle = s.color; aCtx.fillRect(-s.w/2, -s.h/2, s.w, s.h);
+                        aCtx.fillStyle = s.color; aCtx.strokeStyle = "#0b0d14"; aCtx.lineWidth = 1;
+                        // Desenha o polígono irregular
+                        aCtx.beginPath();
+                        aCtx.moveTo(s.vertices[0].x, s.vertices[0].y);
+                        for(let v=1; v<s.vertices.length; v++) aCtx.lineTo(s.vertices[v].x, s.vertices[v].y);
+                        aCtx.closePath(); aCtx.fill(); aCtx.stroke();
                         aCtx.restore();
                     });
 
-                    // Desenha as letras rúnicas voando e se espalhando
-                    aCtx.font = "18px serif";
-                    aCtx.fillStyle = "rgba(45, 55, 75, 0.8)";
+                    aCtx.font = "bold 20px serif"; aCtx.fillStyle = "rgba(60, 70, 90, 0.9)";
                     flyingRunes.forEach(r => {
-                        r.x += r.vx; r.y += r.vy; r.vy += 0.15;
-                        r.rot += r.vRot;
+                        r.x += r.vx; r.y += r.vy; r.vy += 0.2; r.rot += r.vRot;
                         aCtx.save(); aCtx.translate(r.x, r.y); aCtx.rotate(r.rot);
                         aCtx.fillText(r.char, 0, 0); aCtx.restore();
                     });
 
-                    // Limpa fragmentos fora da tela
-                    shards = shards.filter(s => s.y < aCanvas.height);
-                    flyingRunes = flyingRunes.filter(r => r.y < aCanvas.height);
+                    shards = shards.filter(s => s.y < aCanvas.height + 50);
+                    flyingRunes = flyingRunes.filter(r => r.y < aCanvas.height + 50);
                 }
 
-                if (timeline !== 'reveal') { requestAnimationFrame(processScene); }
+                if (timeline !== 'reveal') requestAnimationFrame(processScene);
             }
 
             function triggerShatter() {
                 timeline = 'shatter';
                 charBox.classList.remove('shake-cracking');
-                charBox.classList.add('shatter-hidden'); // Oculta a caixa original instantaneamente
-                tentacles = []; // Dissolve os tentáculos na explosão
+                charBox.classList.add('shatter-hidden');
+                tentacles = []; cracks = [];
 
-                // Criar estilhaços da caixa (Massa escura e bordas)
-                for (let i = 0; i < 45; i++) {
+                // Gerar Polígonos Irregulares (Estilhaços de Vaso)
+                for (let i = 0; i < 60; i++) {
+                    let numVertices = Math.floor(Math.random() * 4) + 3; // 3 a 6 lados
+                    let radius = Math.random() * 18 + 8;
+                    let vertices = [];
+                    for(let v=0; v<numVertices; v++) {
+                        let angle = (v / numVertices) * Math.PI * 2 + (Math.random()-0.5);
+                        let r = radius * (0.6 + Math.random()*0.4);
+                        vertices.push({x: Math.cos(angle)*r, y: Math.sin(angle)*r});
+                    }
+
                     shards.push({
                         x: boxRect.left + Math.random() * boxRect.width, y: boxRect.top + Math.random() * boxRect.height,
-                        vx: (Math.random() - 0.5) * 28, vy: (Math.random() - 0.7) * 22,
-                        w: Math.random() * 20 + 8, h: Math.random() * 15 + 5,
-                        rot: Math.random() * Math.PI, vRot: (Math.random() - 0.5) * 0.2,
-                        color: Math.random() < 0.2 ? "#161c26" : "#07090d"
+                        vx: (Math.random() - 0.5) * 35, vy: (Math.random() - 0.8) * 25,
+                        rot: Math.random() * Math.PI, vRot: (Math.random() - 0.5) * 0.4,
+                        color: Math.random() < 0.25 ? "#12161f" : "#07090d",
+                        vertices: vertices
                     });
                 }
 
-                // Criar runas voadoras expelidas no choque
-                for (let i = 0; i < 50; i++) {
+                for (let i = 0; i < 60; i++) {
                     flyingRunes.push({
-                        x: targetX + (Math.random() - 0.5) * 100, y: targetY + (Math.random() - 0.5) * 100,
-                        vx: (Math.random() - 0.5) * 32, vy: (Math.random() - 0.8) * 26,
+                        x: targetX + (Math.random() - 0.5) * 150, y: targetY + (Math.random() - 0.5) * 150,
+                        vx: (Math.random() - 0.5) * 40, vy: (Math.random() - 0.8) * 30,
                         char: runes[Math.floor(Math.random() * runes.length)],
                         rot: Math.random() * Math.PI, vRot: (Math.random() - 0.5) * 0.3
                     });
                 }
 
-                // Transição para o blecaute total
                 setTimeout(() => {
-                    voidDarkness.style.opacity = '1';
+                    voidDarkness.style.opacity = '1'; // Apaga tudo
                     
                     setTimeout(() => {
-                        // Força a tradução completa em segundo plano enquanto está escuro
+                        // Traduz o texto
                         container.querySelectorAll('.sunny-letter').forEach(l => {
                             l.textContent = l.dataset.real;
                             l.classList.add('revealed');
                         });
 
-                        // Restaura a caixa fisicamente estruturada
                         charBox.classList.remove('shatter-hidden');
+                        charBox.classList.add('emerge-from-void'); // Animação do fundo pro topo
+
                         shards = []; flyingRunes = [];
                         aCtx.clearRect(0, 0, aCanvas.width, aCanvas.height);
                         timeline = 'reveal';
 
-                        // A escuridão recua e revela o texto estritamente traduzido
-                        setTimeout(() => { voidDarkness.style.opacity = '0'; }, 600);
+                        // Revela a cena traduzida vindo das profundezas
+                        setTimeout(() => { voidDarkness.style.opacity = '0'; }, 500);
                     }, 1200);
-
-                }, 800); // Janela para ver os pedaços voando antes do breu
+                }, 700);
             }
 
             processScene();
