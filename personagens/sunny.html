@@ -37,10 +37,10 @@
             position: relative;
         }
 
-        /* Âncora invisível interativa para o clique no Sol */
+        /* Âncora invisível interativa ajustada para o novo tamanho do Sol Grande */
         #sun-trigger {
-            width: 150px;
-            height: 150px;
+            width: 260px;
+            height: 260px;
             border-radius: 50%;
             cursor: pointer;
             pointer-events: auto;
@@ -48,7 +48,7 @@
             transition: transform 0.3s ease;
         }
         #sun-trigger:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         /* FASE 2: Arquivos Subterrâneos de Sunny */
@@ -57,7 +57,7 @@
             width: 100%;
             box-sizing: border-box;
             padding: 60px 20px;
-            display: none; /* Revelado dinamicamente */
+            display: none; 
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
@@ -109,7 +109,7 @@
             transition: color 0.1s, text-shadow 0.1s;
         }
 
-        /* --- BOTÃO DE TRADUÇÃO EM MASSA (REALOCADO) --- */
+        /* --- BOTÃO DE TRADUÇÃO EM MASSA --- */
         .mass-translate-container { align-self: flex-end; margin-bottom: 10px; }
         .mass-translate-btn {
             background: #090b11; border: 1px solid #141923; padding: 10px 20px; border-radius: 4px;
@@ -118,7 +118,7 @@
         }
         .mass-translate-btn:hover { border-color: #ffffff; color: #ffffff; text-shadow: 0 0 8px #fff; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
 
-        /* Animação de Estilhaçamento (Shatter) */
+        /* Animação de Estilhaçamento */
         .shatter-anim {
             animation: shatterFade 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
         }
@@ -128,7 +128,7 @@
             100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--tr)); opacity: 0; filter: blur(5px); color: transparent; text-shadow: none; }
         }
 
-        /* O Estado Revelado Final (Branco Forte Permanente) */
+        /* O Estado Revelado Final */
         .sunny-letter.revealed {
             color: #ffffff !important; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.8) !important;
             animation: gentleFloat 4s infinite ease-in-out;
@@ -165,7 +165,6 @@
         </section>
 
         <section class="phase-two" id="p2-section">
-            
             <div class="soul-registry-box">
                 <div class="mass-translate-container">
                     <button class="mass-translate-btn" id="mass-btn">Traduzir Tudo Permanentemente</button>
@@ -193,7 +192,7 @@
                     <p>Atributos Primários: [Lorde das Sombras], [Mestre das Sombras], [Encarnação das Trevas], [Chama do Destino], [Viajante do Reino das Sombras]</p>
 
                     <h3>Legado de Aspecto</h3>
-                    <p>Estilo Avançado: [Dança das Sombras - Nível Maximo]</p>
+                    <p>Estilo Avançado: [Dança das Sombras - Nível Máximo]</p>
 
                     <h3>Memórias Vinculadas</h3>
                     <p>Arsenal Ativo: [Gota de Sangue], [Espada do Pecado], [Manto do Submundo], [Estilhaço do Luar], [Cadeia de Destinos]</p>
@@ -215,18 +214,18 @@
         let whirlFactor = 0; 
         let currentPhase = 1; 
         
-        // --- Rastro do Mouse ---
         let mouseTrail = [];
         window.addEventListener('mousemove', (e) => {
             mouseTrail.push({ x: e.clientX, y: e.clientY, life: 1.0 });
         });
 
+        // Sóis menores de fundo redimensionados (Maiores e mais imponentes)
         const smallSuns = [];
         for (let i = 0; i < 6; i++) {
             smallSuns.push({
                 x: 0.1 + (i * 0.15) + (Math.random() * 0.05),
-                y: Math.random() * 0.25 + 0.05,
-                size: Math.random() * 12 + 8
+                y: Math.random() * 0.22 + 0.05,
+                size: Math.random() * 20 + 25 // Modificado: antes era 12+8 (Agora de 25px a 45px)
             });
         }
 
@@ -235,8 +234,8 @@
             orbs.push({
                 angle: (Math.PI * 2 / 15) * i,
                 speed: 0.01 + Math.random() * 0.01,
-                distanceOffset: Math.random() * 25 - 10,
-                size: Math.random() * 4.5 + 1.5 
+                distanceOffset: Math.random() * 40 - 15,
+                size: Math.random() * 5 + 2 
             });
         }
 
@@ -277,30 +276,29 @@
                 ambCtx.fill();
             });
 
-            // Pequenos Sóis
+            // Pequenos Sóis Maiores
             smallSuns.forEach(sun => {
                 ambCtx.beginPath();
                 ambCtx.arc(sun.x * ambCanvas.width, sun.y * ambCanvas.height, sun.size, 0, Math.PI * 2);
                 ambCtx.fillStyle = '#000000';
-                ambCtx.shadowColor = 'rgba(255, 255, 255, 0.4)';
-                ambCtx.shadowBlur = 15;
+                ambCtx.shadowColor = 'rgba(255, 255, 255, 0.35)';
+                ambCtx.shadowBlur = 25;
                 ambCtx.fill();
-                ambCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-                ambCtx.lineWidth = 1;
+                ambCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ambCtx.lineWidth = 1.5;
                 ambCtx.stroke();
                 ambCtx.shadowBlur = 0;
             });
 
-            // Atualiza Fator do Redemoinho
             whirlFactor += isTranslating ? 0.02 : -0.01;
             whirlFactor = Math.max(0, Math.min(1, whirlFactor));
 
-            // Captura dinâmica do trigger do sol (Sobe e desce conforme o scroll da página)
+            // Captura dinâmica do trigger do sol
             const sunRect = sunTrigger.getBoundingClientRect();
             const cx = sunRect.left + sunRect.width / 2;
             const cy = sunRect.top + sunRect.height / 2;
 
-            // Oceano com Correntezas e Redemoinho
+            // Oceano com Correntezas
             let seaLevel = ambCanvas.height * 0.82;
             for(let i = 0; i < 4; i++) {
                 ambCtx.beginPath();
@@ -311,8 +309,8 @@
                     let dx = x - cx;
                     let dist = Math.abs(dx);
                     
-                    let whirlPull = Math.max(0, 300 - dist) / 300; 
-                    let pullDown = whirlPull * 200 * whirlFactor; 
+                    let whirlPull = Math.max(0, 400 - dist) / 400; 
+                    let pullDown = whirlPull * 250 * whirlFactor; 
 
                     let waveSpeed = ambTime * (1 + i * 0.15) * (1 + whirlFactor * 8); 
                     let baseHeight = seaLevel + i * 12;
@@ -331,12 +329,12 @@
                 ambCtx.stroke();
             }
 
-            // O 7º Sol Grande
-            const baseRadius = 70; 
+            // O 7º Sol Grande (Modificado de 70 para 130 de raio base!)
+            const baseRadius = 130; 
 
             ambCtx.beginPath();
-            for(let a = 0; a <= Math.PI * 2.1; a += 0.05) {
-                let waveIntensity = isTranslating ? 60 : 12;
+            for(let a = 0; a <= Math.PI * 2.1; a += 0.04) {
+                let waveIntensity = isTranslating ? 90 : 20;
                 let speedMultiplier = isTranslating ? 40 : 4; 
                 
                 let wave1 = Math.sin(a * 14 + ambTime * speedMultiplier) * waveIntensity;
@@ -353,20 +351,20 @@
             ambCtx.closePath();
             ambCtx.fillStyle = '#ffffff'; 
             ambCtx.shadowColor = '#ffffff';
-            ambCtx.shadowBlur = isTranslating ? 100 : 25; 
+            ambCtx.shadowBlur = isTranslating ? 150 : 40; 
             ambCtx.fill();
             ambCtx.shadowBlur = 0; 
 
             // Núcleo Negro Perfeito
             ambCtx.beginPath();
-            ambCtx.arc(cx, cy, baseRadius - 2, 0, Math.PI * 2); 
+            ambCtx.arc(cx, cy, baseRadius - 3, 0, Math.PI * 2); 
             ambCtx.fillStyle = '#000000';
             ambCtx.fill();
 
-            // Orbes Girando
+            // Orbes Girando ao redor do Novo Sol Gigante
             orbs.forEach(orb => {
                 orb.angle += isTranslating ? orb.speed * 12 : orb.speed; 
-                let orbRadius = baseRadius + 30 + orb.distanceOffset + (isTranslating ? 35 : 0);
+                let orbRadius = baseRadius + 45 + orb.distanceOffset + (isTranslating ? 50 : 0);
                 let oX = cx + Math.cos(orb.angle) * orbRadius;
                 let oY = cy + Math.sin(orb.angle) * orbRadius;
 
@@ -418,7 +416,6 @@
                 span.style.setProperty('--ty', (Math.random() * -60 - 20) + 'px');
                 span.style.setProperty('--tr', (Math.random() * 180 - 90) + 'deg');
 
-                // Hover ultra rápido e retenção de 1.5s controlado direto na propriedade do span
                 span.addEventListener('mouseenter', () => {
                     if(currentPhase !== 2 || span.classList.contains('revealed') || isTranslating) return;
                     if(span.timeoutId) clearTimeout(span.timeoutId);
@@ -442,28 +439,24 @@
             }
         });
 
-        // --- 3. EVENTO DE ATIVAÇÃO E REDIRECIONAMENTO (DESCIDA) ---
+        // --- 3. EVENTO DE ATIVAÇÃO E REDIRECIONAMENTO ---
         sunTrigger.addEventListener('click', () => {
             if (currentPhase !== 1 || isTranslating) return;
             isTranslating = true;
             
             const voidDarkness = document.getElementById('void');
-            voidDarkness.style.opacity = '1'; // Tela fica preta
+            voidDarkness.style.opacity = '1'; 
 
-            // Durante o breu total (1000ms)
             setTimeout(() => {
                 currentPhase = 2;
-                sunTrigger.style.pointerEvents = 'none'; // Desativa interações no gatilho antigo
+                sunTrigger.style.pointerEvents = 'none'; 
                 
-                // Monta estruturalmente a Fase 2 e permite o scroll vertical na página
                 document.getElementById('p2-section').style.display = 'flex';
                 document.documentElement.style.overflowY = 'auto';
                 document.body.style.overflowY = 'auto';
 
-                // Move instantaneamente a janela para baixo (Fase 2)
                 window.scrollTo(0, window.innerHeight);
 
-                // Libera a visão rapidamente removendo o blackout
                 setTimeout(() => {
                     voidDarkness.style.opacity = '0';
                     isTranslating = false;
@@ -472,7 +465,7 @@
             }, 1000);
         });
 
-        // --- 4. TRADUÇÃO EM MASSA PERMANENTE COM COMPORTAMENTO SHATTER ---
+        // --- 4. TRADUÇÃO EM MASSA PERMANENTE ---
         document.getElementById('mass-btn').addEventListener('click', () => {
             if(isTranslating || currentPhase !== 2) return; 
             isTranslating = true;
