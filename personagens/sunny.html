@@ -8,7 +8,7 @@
         /* --- ESTILOS GLOBAIS --- */
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background: #000000; overflow: hidden; font-family: monospace;
+            background: #050505; overflow: hidden; font-family: monospace;
             color: #e0f7fa;
         }
 
@@ -30,7 +30,6 @@
         }
         .mass-translate-btn:hover { border-color: #ffffff; color: #ffffff; text-shadow: 0 0 8px #fff; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
 
-        /* Container agora é transparente para sentar dentro do sol negro */
         .character-container {
             display: flex; flex-direction: column; gap: 20px;
             background: transparent; border: none; box-shadow: none;
@@ -45,23 +44,27 @@
 
         /* --- TEXTOS DAS RUNAS --- */
         .sunny-rune-text p { margin: 8px 0; font-family: monospace; font-size: 16px; color: #555c6b; }
+        
         .sunny-letter { 
             display: inline-block; font-family: serif; color: #4a5463; 
-            transition: color 0.5s, text-shadow 0.5s;
-        }
-        
-        /* O Brilho Preto Inicial da Tradução */
-        .black-flash {
-            color: #000000 !important;
-            text-shadow: 0 0 8px #ffffff, 0 0 15px #ffffff, 0 0 30px #ffffff !important;
-            font-weight: bold;
-            transform: scale(1.05);
+            transition: color 0.3s, text-shadow 0.3s;
+            cursor: crosshair;
         }
 
-        /* O Estado Revelado Final */
+        /* Animação de Estilhaçamento (Shatter) */
+        .shatter-anim {
+            animation: shatterFade 0.9s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        @keyframes shatterFade {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; filter: blur(0); color: #000; text-shadow: 0 0 15px #fff; }
+            40% { color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.8); }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--tr)); opacity: 0; filter: blur(5px); color: transparent; text-shadow: none; }
+        }
+
+        /* O Estado Revelado Final (Branco Forte) */
         .sunny-letter.revealed {
-            color: #ffffff !important; font-weight: bold; text-shadow: 0 0 8px rgba(255,255,255,0.6);
-            animation: gentleFloat 4s infinite ease-in-out;
+            color: #ffffff !important; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.8);
+            animation: gentleFloat 4s infinite ease-in-out; cursor: default;
         }
 
         @keyframes gentleFloat {
@@ -73,7 +76,7 @@
         .absolute-darkness {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000000; z-index: 200; opacity: 0; pointer-events: none;
-            transition: opacity 1.2s ease-in-out;
+            transition: opacity 1.5s ease-in-out;
         }
         .scene-title { position: fixed; bottom: 15px; left: 20px; font-size: 1.2rem; letter-spacing: 0.2rem; color: rgba(255, 255, 255, 0.4); z-index: 5; }
 
@@ -114,87 +117,116 @@
         const ambCtx = ambCanvas.getContext('2d');
         const charBox = document.getElementById('char-box');
         
-        let ambTime = 0, wavesPattern;
-        let isTranslating = false; // Controle de animação do 7º sol
+        let ambTime = 0;
+        let isTranslating = false; 
         
-        // Pequenos sóis de fundo
+        // 6 Pequenos sóis espalhados na parte superior
         const smallSuns = [];
         for (let i = 0; i < 6; i++) {
             smallSuns.push({
-                x: Math.random(),
-                y: Math.random() * 0.3 + 0.05, // Parte de cima
-                size: Math.random() * 10 + 10
+                x: 0.1 + (i * 0.15) + (Math.random() * 0.05),
+                y: Math.random() * 0.25 + 0.05,
+                size: Math.random() * 12 + 8
             });
         }
 
-        // Bolinhas brancas (Orbes) girando
+        // Bolinhas brancas orbitando o 7º Sol (Tamanhos variados)
         const orbs = [];
-        for(let i = 0; i < 12; i++) {
+        for(let i = 0; i < 15; i++) {
             orbs.push({
-                angle: (Math.PI * 2 / 12) * i,
-                speed: 0.01 + Math.random() * 0.015,
-                distanceOffset: Math.random() * 20 - 10,
-                size: Math.random() * 2 + 2
+                angle: (Math.PI * 2 / 15) * i,
+                speed: 0.01 + Math.random() * 0.01,
+                distanceOffset: Math.random() * 25 - 10,
+                size: Math.random() * 4.5 + 1.5 // Algumas maiores, outras menores
             });
+        }
+
+        // Bolinhas/Bolhas subindo do fundo (Atrás do mar)
+        let bubbles = [];
+        function initBubbles() {
+            bubbles = [];
+            for(let i=0; i<40; i++) {
+                bubbles.push({
+                    x: Math.random() * window.innerWidth,
+                    y: window.innerHeight + Math.random() * 400,
+                    speed: Math.random() * 1.5 + 0.5,
+                    size: Math.random() * 2.5 + 0.5
+                });
+            }
         }
 
         function resizeAmbient() {
             ambCanvas.width = window.innerWidth;
             ambCanvas.height = window.innerHeight;
-            createWavesTexture();
+            initBubbles();
         }
         window.addEventListener('resize', resizeAmbient);
-
-        // Textura do Mar (Preto, tranquilo, linhas cinzas)
-        function createWavesTexture() {
-            const pCanvas = document.createElement('canvas'); const pCtx = pCanvas.getContext('2d');
-            pCanvas.width = 128; pCanvas.height = 128;
-            pCtx.fillStyle = '#000000'; pCtx.fillRect(0, 0, 128, 128); // Água preta
-            pCtx.strokeStyle = '#222222'; pCtx.lineWidth = 1; // Contorno cinza escuro
-            
-            pCtx.beginPath();
-            for (let i = 0; i < 64; i++) {
-                pCtx.moveTo(0, i * 4);
-                // Ondas bem mais tranquilas e retas
-                for (let x = 0; x <= 128; x += 8) {
-                    pCtx.lineTo(x, i * 4 + Math.sin(x * 0.05 + i * 0.1) * 1.5);
-                }
-            }
-            pCtx.stroke();
-            wavesPattern = ambCtx.createPattern(pCanvas, 'repeat');
-        }
 
         function drawAmbient() {
             ambCtx.fillStyle = '#050505'; 
             ambCtx.fillRect(0, 0, ambCanvas.width, ambCanvas.height);
 
-            // Desenhar os 6 pequenos sóis no fundo
+            // 1. Bolhas subindo atrás do mar
+            ambCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            bubbles.forEach(b => {
+                b.y -= b.speed + (isTranslating ? 2 : 0); // Sobem mais rápido traduzindo
+                if(b.y < ambCanvas.height * 0.3) { 
+                    b.y = ambCanvas.height + 50; 
+                    b.x = Math.random() * ambCanvas.width; 
+                }
+                ambCtx.beginPath();
+                ambCtx.arc(b.x, b.y, b.size, 0, Math.PI * 2);
+                ambCtx.fill();
+            });
+
+            // 2. Os 6 pequenos sóis no fundo
             smallSuns.forEach(sun => {
                 ambCtx.beginPath();
                 ambCtx.arc(sun.x * ambCanvas.width, sun.y * ambCanvas.height, sun.size, 0, Math.PI * 2);
                 ambCtx.fillStyle = '#000000';
-                ambCtx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+                ambCtx.shadowColor = 'rgba(255, 255, 255, 0.4)';
                 ambCtx.shadowBlur = 15;
                 ambCtx.fill();
                 ambCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
                 ambCtx.lineWidth = 1;
                 ambCtx.stroke();
-                ambCtx.shadowBlur = 0; // Reset
+                ambCtx.shadowBlur = 0;
             });
 
-            // Localizar o 7º Sol Grande atrás do texto
+            // 3. Oceano com Correntezas (Atrás do 7º Sol)
+            let seaLevel = ambCanvas.height * 0.82;
+            for(let i = 0; i < 4; i++) {
+                ambCtx.beginPath();
+                ambCtx.moveTo(0, ambCanvas.height);
+                ambCtx.lineTo(0, seaLevel + i * 12);
+                
+                // Ondas senoidais combinadas para parecer correnteza real
+                for(let x = 0; x <= ambCanvas.width; x += 30) {
+                    let waveSpeed = ambTime * (1 + i * 0.15);
+                    let y = seaLevel + i * 12 + Math.sin(x * 0.01 + waveSpeed) * (5 + i * 2) + Math.cos(x * 0.005 - waveSpeed * 0.5) * 3;
+                    ambCtx.lineTo(x, y);
+                }
+                ambCtx.lineTo(ambCanvas.width, ambCanvas.height);
+                
+                ambCtx.fillStyle = `rgba(5, 5, 5, 0.9)`; 
+                ambCtx.fill();
+                ambCtx.strokeStyle = `rgba(50, 50, 50, ${0.4 + i * 0.1})`; // Contorno cinza da água
+                ambCtx.lineWidth = 1.5;
+                ambCtx.stroke();
+            }
+
+            // 4. O 7º Sol Grande (Desenhado por último, sobrepondo o mar se encostar)
             const boxRect = charBox.getBoundingClientRect();
             const cx = boxRect.left + boxRect.width / 2;
             const cy = boxRect.top + boxRect.height / 2;
-            const baseRadius = Math.max(boxRect.width, boxRect.height) / 1.6;
+            const baseRadius = Math.max(boxRect.width, boxRect.height) / 1.5;
 
-            // Chamas do 7º Sol (Ondulação)
+            // A) Chamas Brancas Ondulantes do 7º Sol
             ambCtx.beginPath();
             for(let a = 0; a <= Math.PI * 2.1; a += 0.05) {
-                // Se estiver traduzindo, a chama fica agressiva e gira mais rápido
-                let waveIntensity = isTranslating ? 30 : 8;
-                let speedMultiplier = isTranslating ? 15 : 3;
-                let wave = Math.sin(a * 12 + ambTime * speedMultiplier) * waveIntensity;
+                let waveIntensity = isTranslating ? 45 : 12;
+                let speedMultiplier = isTranslating ? 25 : 4;
+                let wave = Math.sin(a * 14 + ambTime * speedMultiplier) * waveIntensity;
                 
                 let r = baseRadius + wave;
                 let x = cx + Math.cos(a) * r;
@@ -204,35 +236,33 @@
                 else ambCtx.lineTo(x, y);
             }
             ambCtx.closePath();
-            ambCtx.fillStyle = '#000000';
+            ambCtx.fillStyle = '#ffffff'; 
             ambCtx.shadowColor = '#ffffff';
-            ambCtx.shadowBlur = isTranslating ? 60 : 25; // Brilho aumenta na tradução
+            ambCtx.shadowBlur = isTranslating ? 80 : 25; 
             ambCtx.fill();
-            ambCtx.shadowBlur = 0; // Reset
+            ambCtx.shadowBlur = 0; 
 
-            // Bolinhas Perfeitamente Brancas Girando
+            // B) Núcleo Negro Perfeito (Permanece intacto e circular)
+            ambCtx.beginPath();
+            ambCtx.arc(cx, cy, baseRadius - 2, 0, Math.PI * 2); // Levemente menor para não cobrir a base das chamas
+            ambCtx.fillStyle = '#000000';
+            ambCtx.fill();
+
+            // C) Orbes Perfeitamente Brancos Girando
             orbs.forEach(orb => {
-                orb.angle += isTranslating ? orb.speed * 4 : orb.speed; // Acelera se traduzindo
-                let orbRadius = baseRadius + 30 + orb.distanceOffset + (isTranslating ? 20 : 0);
+                orb.angle += isTranslating ? orb.speed * 6 : orb.speed; 
+                let orbRadius = baseRadius + 30 + orb.distanceOffset + (isTranslating ? 25 : 0);
                 let oX = cx + Math.cos(orb.angle) * orbRadius;
                 let oY = cy + Math.sin(orb.angle) * orbRadius;
 
                 ambCtx.beginPath();
                 ambCtx.arc(oX, oY, orb.size, 0, Math.PI * 2);
                 ambCtx.fillStyle = '#ffffff';
+                ambCtx.shadowColor = '#ffffff';
+                ambCtx.shadowBlur = 8;
                 ambCtx.fill();
+                ambCtx.shadowBlur = 0;
             });
-
-            // Oceano Menor (parte debaixo da tela)
-            let seaLevel = ambCanvas.height * 0.85; // Mar bem pra baixo
-            ambCtx.save();
-            ambCtx.beginPath(); 
-            ambCtx.rect(0, seaLevel, ambCanvas.width, ambCanvas.height - seaLevel); 
-            ambCtx.clip();
-            ambCtx.fillStyle = wavesPattern;
-            ambCtx.translate(ambTime * 0.3, 0); // Movimento calmo da água
-            ambCtx.fillRect(-ambCanvas.width, -ambCanvas.height, ambCanvas.width * 2, ambCanvas.height * 2);
-            ambCtx.restore();
 
             ambTime += 0.01;
             requestAnimationFrame(drawAmbient);
@@ -241,51 +271,89 @@
         resizeAmbient(); 
         drawAmbient();
 
-        // --- 2. GERAÇÃO DO TEXTO RÚNICO ---
+        // --- 2. GERAÇÃO DO TEXTO E EVENTOS DE HOVER ---
         const runes = ['ᚦ', 'ᚧ', 'ᚨ', 'ᛒ', 'ᛃ', 'ᛄ', 'ᛅ', 'ᛆ', 'ᛇ', 'ᛈ', 'ᛉ'];
         const container = document.getElementById('sunny-soul-core');
+        
         container.querySelectorAll('p').forEach(p => {
             const txt = p.textContent; p.textContent = '';
             for (let i = 0; i < txt.length; i++) {
                 const span = document.createElement('span'); span.classList.add('sunny-letter');
-                span.dataset.real = txt[i]; span.textContent = txt[i] === ' ' ? ' ' : runes[Math.floor(Math.random() * runes.length)];
+                const runeChar = txt[i] === ' ' ? ' ' : runes[Math.floor(Math.random() * runes.length)];
+                
+                span.dataset.real = txt[i]; 
+                span.dataset.rune = runeChar;
+                span.textContent = runeChar;
+
+                // Variáveis CSS customizadas para espalhar aleatoriamente no estilhaço
+                span.style.setProperty('--tx', (Math.random() * 60 - 30) + 'px');
+                span.style.setProperty('--ty', (Math.random() * -60 - 20) + 'px');
+                span.style.setProperty('--tr', (Math.random() * 180 - 90) + 'deg');
+
+                // Hover para traduzir letra para preto antes do mass translate
+                span.addEventListener('mouseenter', () => {
+                    if(!span.classList.contains('revealed') && !isTranslating) {
+                        span.textContent = span.dataset.real;
+                        span.style.color = '#000000';
+                        span.style.textShadow = '0 0 10px rgba(255,255,255,0.9)';
+                    }
+                });
+                span.addEventListener('mouseleave', () => {
+                    if(!span.classList.contains('revealed') && !isTranslating) {
+                        span.textContent = span.dataset.rune;
+                        span.style.color = '';
+                        span.style.textShadow = '';
+                    }
+                });
+
                 p.appendChild(span);
             }
         });
 
-        // --- 3. ANIMAÇÃO DE TRADUÇÃO (ECLIPSE) ---
+        // --- 3. ANIMAÇÃO COMPLETA DE TRADUÇÃO ---
         document.getElementById('mass-btn').addEventListener('click', () => {
-            if(isTranslating) return; // Evita duplo clique
+            if(isTranslating) return; 
             isTranslating = true;
             const voidDarkness = document.getElementById('void');
 
-            // 1. O sol se agita (isTranslating já é true)
+            // 1. O sol queima e gira violentamente IMEDIATAMENTE (pois isTranslating = true)
             
-            // 2. A tela escurece após as chamas oscilarem um pouco
+            // 2. Após 2 segundos da explosão do sol, a tela escurece
             setTimeout(() => {
                 voidDarkness.style.opacity = '1'; 
                 
-                // 3. Enquanto a tela está preta, as letras mudam e recebem a classe de brilho negro
+                // 3. Enquanto está tudo escuro, as letras se revelam em PRETO
                 setTimeout(() => {
                     container.querySelectorAll('.sunny-letter').forEach(l => {
                         l.textContent = l.dataset.real;
-                        l.classList.add('black-flash'); // Aplica o brilho preto explosivo
+                        l.style.color = '#000000';
+                        l.style.textShadow = '0 0 15px #ffffff';
                     });
 
-                    // 4. A luz retorna e revela o texto brilhando em preto
+                    // 4. A escuridão some (sol volta a ficar calmo)
                     voidDarkness.style.opacity = '0';
-                    isTranslating = false; // Sol volta a se acalmar
+                    isTranslating = false; 
                     
-                    // 5. O brilho preto se dissipa, deixando o texto branco perfeitamente legível
+                    // 5. Deixa o texto preto visível por um curto momento e então ESTILHAÇA
                     setTimeout(() => {
                         container.querySelectorAll('.sunny-letter').forEach(l => {
-                            l.classList.remove('black-flash');
-                            l.classList.add('revealed');
+                            l.style.color = ''; // Remove inline para usar CSS
+                            l.style.textShadow = '';
+                            l.classList.add('shatter-anim'); // Letras quebram e somem
                         });
-                    }, 1500); // Duração do brilho negro intenso
 
-                }, 1200); // Tempo na escuridão
-            }, 1000); // Tempo do sol ondulando forte antes de apagar
+                        // 6. Finalmente, limpa o estilhaço e ativa o BRANCO FORTE
+                        setTimeout(() => {
+                            container.querySelectorAll('.sunny-letter').forEach(l => {
+                                l.classList.remove('shatter-anim');
+                                l.classList.add('revealed');
+                            });
+                        }, 900); // Duração exata do keyframe shatterFade
+
+                    }, 800); // Tempo que as letras ficam pretas paradas pós-escuridão
+
+                }, 1500); // Tempo total em escuridão absoluta
+            }, 2000); // Tempo do sol queimando forte antes de apagar
         });
     </script>
 </body>
