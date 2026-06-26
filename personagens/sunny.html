@@ -19,12 +19,12 @@
         .content-wrapper {
             position: relative; z-index: 20; max-width: 750px; width: 100%; height: 100%; margin: 0 auto;
             padding: 5vh 20px 40px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; pointer-events: none; /* Deixa o rastro do mouse passar por cima em áreas vazias */
+            justify-content: center; pointer-events: none;
         }
         
         .mass-translate-container, .character-container, .back-btn-container { pointer-events: auto; }
 
-        .mass-translate-container { position: absolute; top: 5vh; z-index: 30; }
+        .mass-translate-container { position: absolute; top: 5vh; z-index: 30; display: none; }
         .mass-translate-btn {
             background: #050608; border: 1px solid #141923; padding: 12px 24px; border-radius: 4px;
             color: #4f5b73; font-family: monospace; font-size: 14px; cursor: pointer;
@@ -36,29 +36,26 @@
             display: flex; flex-direction: column; gap: 20px;
             background: transparent; border: none; box-shadow: none;
             align-items: center; text-align: center; position: relative;
+            cursor: pointer; /* Indica que o Sol é clicável no início */
         }
         
         .character-img { 
             width: 140px; height: 140px; object-fit: cover; border-radius: 50%; 
             border: 2px solid #ffffff; filter: grayscale(80%) brightness(70%); 
             box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+        .character-container:hover .character-img {
+            transform: scale(1.03);
         }
 
         /* --- TEXTOS DAS RUNAS --- */
+        .sunny-rune-text { display: none; }
         .sunny-rune-text p { margin: 8px 0; font-family: monospace; font-size: 16px; color: #555c6b; }
         
         .sunny-letter { 
             display: inline-block; font-family: serif; color: #4a5463; 
-            transition: color 0.3s, text-shadow 0.3s;
-        }
-
-        /* Efeito de Hover: Preto estático -> Branco brilhante e legível */
-        .hover-translate {
-            animation: hoverReveal 0.6s forwards;
-        }
-        @keyframes hoverReveal {
-            0% { color: #000000; text-shadow: 0 0 12px rgba(255,255,255,0.9); }
-            100% { color: #ffffff; text-shadow: 0 0 6px rgba(255,255,255,0.4); }
+            transition: color 0.15s, text-shadow 0.15s;
         }
 
         /* Animação de Estilhaçamento (Shatter) */
@@ -73,7 +70,7 @@
 
         /* O Estado Revelado Final (Branco Forte) */
         .sunny-letter.revealed {
-            color: #ffffff !important; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.8);
+            color: #ffffff !important; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.8) !important;
             animation: gentleFloat 4s infinite ease-in-out;
         }
 
@@ -103,7 +100,7 @@
     <canvas id="ambient-canvas"></canvas>
 
     <div class="content-wrapper">
-        <div class="mass-translate-container">
+        <div class="mass-translate-container" id="mass-container">
             <button class="mass-translate-btn" id="mass-btn">Traduzir Registro da Alma</button>
         </div>
 
@@ -129,7 +126,8 @@
         
         let ambTime = 0;
         let isTranslating = false; 
-        let whirlFactor = 0; // Controla a força do redemoinho (0 a 1)
+        let whirlFactor = 0; 
+        let currentPhase = 1; // Fase 1: Apenas Sol Inicial | Fase 2: Redirecionado para Textos
         
         // --- Rastro do Mouse ---
         let mouseTrail = [];
@@ -137,7 +135,6 @@
             mouseTrail.push({ x: e.clientX, y: e.clientY, life: 1.0 });
         });
 
-        // 6 Pequenos sóis espalhados na parte superior
         const smallSuns = [];
         for (let i = 0; i < 6; i++) {
             smallSuns.push({
@@ -147,7 +144,6 @@
             });
         }
 
-        // Bolinhas brancas orbitando o 7º Sol
         const orbs = [];
         for(let i = 0; i < 15; i++) {
             orbs.push({
@@ -185,7 +181,7 @@
             // Bolhas
             ambCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
             bubbles.forEach(b => {
-                b.y -= b.speed + (isTranslating ? 4 : 0); // Muito mais rápido
+                b.y -= b.speed + (isTranslating ? 4 : 0);
                 if(b.y < ambCanvas.height * 0.3) { 
                     b.y = ambCanvas.height + 50; 
                     b.x = Math.random() * ambCanvas.width; 
@@ -213,10 +209,9 @@
             whirlFactor += isTranslating ? 0.02 : -0.01;
             whirlFactor = Math.max(0, Math.min(1, whirlFactor));
 
-            // Centro base da tela/sol
             const boxRect = charBox.getBoundingClientRect();
             const cx = boxRect.left + boxRect.width / 2;
-            const cy = boxRect.top + boxRect.height / 2;
+            const cy = boxRect.top + (currentPhase === 1 ? boxRect.height / 2 : 70); // Ajusta o centro do sol na Fase 2
 
             // Oceano com Correntezas e Redemoinho
             let seaLevel = ambCanvas.height * 0.82;
@@ -229,14 +224,12 @@
                     let dx = x - cx;
                     let dist = Math.abs(dx);
                     
-                    // Lógica do Redemoinho: puxa a água pra baixo perto do centro quando whirlFactor > 0
                     let whirlPull = Math.max(0, 300 - dist) / 300; 
                     let pullDown = whirlPull * 200 * whirlFactor; 
 
-                    let waveSpeed = ambTime * (1 + i * 0.15) * (1 + whirlFactor * 8); // Água muito agressiva
+                    let waveSpeed = ambTime * (1 + i * 0.15) * (1 + whirlFactor * 8); 
                     let baseHeight = seaLevel + i * 12;
 
-                    // O x também "entorta" levemente simulando o redemoinho puxando pro centro
                     let swirlOffset = (dx > 0 ? -1 : 1) * whirlPull * 50 * whirlFactor;
                     
                     let y = baseHeight + pullDown + Math.sin((x + swirlOffset) * 0.01 + waveSpeed) * (5 + i * 2) * (1 + whirlFactor * 3) + Math.cos(x * 0.005 - waveSpeed * 0.5) * 3;
@@ -252,15 +245,13 @@
             }
 
             // O 7º Sol Grande
-            const baseRadius = Math.max(boxRect.width, boxRect.height) / 1.5;
+            const baseRadius = 70; // Mantém fixo estrutural para compatibilidade de layout
 
-            // Chamas Brancas Ondulantes do 7º Sol (Tamanhos Variados)
             ambCtx.beginPath();
             for(let a = 0; a <= Math.PI * 2.1; a += 0.05) {
                 let waveIntensity = isTranslating ? 60 : 12;
-                let speedMultiplier = isTranslating ? 40 : 4; // Rotação bem mais rápida
+                let speedMultiplier = isTranslating ? 40 : 4; 
                 
-                // Combinação de duas ondas (uma maior, uma menor) para chamas irregulares
                 let wave1 = Math.sin(a * 14 + ambTime * speedMultiplier) * waveIntensity;
                 let wave2 = Math.cos(a * 7 - ambTime * (speedMultiplier * 0.8)) * (waveIntensity * 0.6);
                 let wave = wave1 + wave2;
@@ -301,19 +292,18 @@
                 ambCtx.shadowBlur = 0;
             });
 
-            // Desenhar Rastro do Mouse (esfumaçado preto)
+            // Rastro do Mouse
             for (let i = 0; i < mouseTrail.length; i++) {
                 let p = mouseTrail[i];
                 ambCtx.beginPath();
                 ambCtx.arc(p.x, p.y, p.life * 6, 0, Math.PI * 2);
-                ambCtx.fillStyle = `rgba(0, 0, 0, ${p.life * 0.8})`; // Cor preta
-                ambCtx.shadowColor = `rgba(255, 255, 255, ${p.life * 0.5})`; // Leve brilho branco
+                ambCtx.fillStyle = `rgba(0, 0, 0, ${p.life * 0.8})`; 
+                ambCtx.shadowColor = `rgba(255, 255, 255, ${p.life * 0.5})`; 
                 ambCtx.shadowBlur = 5;
                 ambCtx.fill();
                 ambCtx.shadowBlur = 0;
-                p.life -= 0.04; // Velocidade em que a partícula some
+                p.life -= 0.04; 
             }
-            // Remove partículas mortas
             mouseTrail = mouseTrail.filter(p => p.life > 0);
 
             ambTime += 0.01;
@@ -323,7 +313,7 @@
         resizeAmbient(); 
         drawAmbient();
 
-        // --- 2. GERAÇÃO DO TEXTO E EVENTOS DE HOVER ---
+        // --- 2. GERAÇÃO E INTERAÇÃO DINÂMICA DAS RUNAS (FASE 2) ---
         const runes = ['ᚦ', 'ᚧ', 'ᚨ', 'ᛒ', 'ᛃ', 'ᛄ', 'ᛅ', 'ᛆ', 'ᛇ', 'ᛈ', 'ᛉ'];
         const container = document.getElementById('sunny-soul-core');
         
@@ -341,68 +331,97 @@
                 span.style.setProperty('--ty', (Math.random() * -60 - 20) + 'px');
                 span.style.setProperty('--tr', (Math.random() * 180 - 90) + 'deg');
 
-                // Novo Hover: Troca a letra e adiciona a animação de Preto para Branco
+                let resetTimer = null;
+
+                // Passar o mouse por cima: tradução instantânea branca
                 span.addEventListener('mouseenter', () => {
-                    if(!span.classList.contains('revealed') && !isTranslating) {
-                        span.textContent = span.dataset.real;
-                        span.classList.add('hover-translate');
-                    }
+                    if(currentPhase !== 2 || span.classList.contains('revealed') || isTranslating) return;
+                    
+                    if(resetTimer) clearTimeout(resetTimer); // Cancela o retrocesso se passar o mouse antes do tempo acabar
+                    
+                    span.textContent = span.dataset.real;
+                    span.style.color = '#ffffff';
+                    span.style.textShadow = '0 0 10px rgba(255,255,255,0.8)';
                 });
+
+                // Remover o mouse: aguarda 1,5 segundos e volta a ser rúnico
                 span.addEventListener('mouseleave', () => {
-                    if(!span.classList.contains('revealed') && !isTranslating) {
+                    if(currentPhase !== 2 || span.classList.contains('revealed') || isTranslating) return;
+                    
+                    resetTimer = setTimeout(() => {
                         span.textContent = span.dataset.rune;
-                        span.classList.remove('hover-translate');
-                    }
+                        span.style.color = '';
+                        span.style.textShadow = '';
+                    }, 1500); // Retorna em 1.5s
                 });
 
                 p.appendChild(span);
             }
         });
 
-        // --- 3. ANIMAÇÃO COMPLETA DE TRADUÇÃO (Tempos Mais Rápidos) ---
-        document.getElementById('mass-btn').addEventListener('click', () => {
-            if(isTranslating) return; 
+        // --- 3. EVENTO DE REDIRECIONAMENTO (CLIQUE NO SOL) ---
+        charBox.addEventListener('click', () => {
+            // Só executa se estivermos na Fase 1 e sem animações pendentes
+            if (currentPhase !== 1 || isTranslating) return;
+            isTranslating = true;
+            
+            const voidDarkness = document.getElementById('void');
+            voidDarkness.style.opacity = '1'; // Tela fica preta
+
+            // Quando a escuridão cobrir tudo perfeitamente (1000ms)
+            setTimeout(() => {
+                currentPhase = 2; // Passa para a fase de leitura
+                charBox.style.cursor = 'default'; // Sol deixa de ser o botão principal
+                
+                // Exibe os textos rúnicos e o painel superior de Tradução em massa
+                document.getElementById('mass-container').style.display = 'block';
+                container.style.display = 'block';
+
+                // Dispersa a escuridão rapidamente (400ms)
+                setTimeout(() => {
+                    voidDarkness.style.opacity = '0';
+                    isTranslating = false; // Normaliza o balanço das águas
+                }, 400);
+
+            }, 1000);
+        });
+
+        // --- 4. TRADUÇÃO EM MASSA PERMANENTE (FASE 2) ---
+        document.getElementById('mass-btn').addEventListener('click', (e) => {
+            e.stopPropagation(); // Previne conflitos de cliques no container
+            if(isTranslating || currentPhase !== 2) return; 
             isTranslating = true;
             const voidDarkness = document.getElementById('void');
 
-            // Sol queima instantaneamente e gera o redemoinho na água.
+            voidDarkness.style.opacity = '1'; 
             
-            // Reduzido de 2000ms para 1000ms
             setTimeout(() => {
-                voidDarkness.style.opacity = '1'; 
+                container.querySelectorAll('.sunny-letter').forEach(l => {
+                    l.textContent = l.dataset.real;
+                    l.style.color = '#000000';
+                    l.style.textShadow = '0 0 15px #ffffff';
+                });
+
+                voidDarkness.style.opacity = '0';
+                isTranslating = false;
                 
-                // Reduzido de 1500ms para 800ms na escuridão
                 setTimeout(() => {
                     container.querySelectorAll('.sunny-letter').forEach(l => {
-                        l.textContent = l.dataset.real;
-                        l.style.color = '#000000';
-                        l.style.textShadow = '0 0 15px #ffffff';
-                        l.classList.remove('hover-translate'); // Garante limpeza do hover
+                        l.style.color = ''; 
+                        l.style.textShadow = '';
+                        l.classList.add('shatter-anim'); 
                     });
 
-                    voidDarkness.style.opacity = '0';
-                    isTranslating = false; // Redemoinho começa a perder força suavemente
-                    
-                    // Deixa preto, depois de 400ms estilhaça rápido
                     setTimeout(() => {
                         container.querySelectorAll('.sunny-letter').forEach(l => {
-                            l.style.color = ''; 
-                            l.style.textShadow = '';
-                            l.classList.add('shatter-anim'); 
+                            l.classList.remove('shatter-anim');
+                            l.classList.add('revealed');
                         });
+                    }, 600); 
 
-                        // Revela o branco em 600ms
-                        setTimeout(() => {
-                            container.querySelectorAll('.sunny-letter').forEach(l => {
-                                l.classList.remove('shatter-anim');
-                                l.classList.add('revealed');
-                            });
-                        }, 600); 
+                }, 400); 
 
-                    }, 400); 
-
-                }, 800); 
-            }, 1000); 
+            }, 800); 
         });
     </script>
 </body>
